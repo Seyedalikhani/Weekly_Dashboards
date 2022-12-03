@@ -281,20 +281,16 @@ conn_performanceDB = conn.cursor()
 
 
 
-conn_performanceDB.execute("select Date, Contractor, sum([CC (%)]*[Total Voice Traffic (Erlang)])/sum([Total Voice Traffic (Erlang)]) as 'CC (%)'"+
-                           "from Province_KPI_Score_Band_CS_Daily group by Date,  Contractor order by Date, Contractor")
-CC_Hourly_Table=conn_performanceDB.fetchall()
+# /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+# ((((((((((((((((((((( Functions ))))))))))))))))))))))))
+# \/\/\/\/\/\/\/\/\/\/\/\\/\/\/\/\/\/\/\/\/\/\/\\/\/\/\/\/
 
-conn_performanceDB.execute("select Day, Contractor, sum([RD (%)]*[Total Payload (GB)])/sum([Total Payload (GB)]) as 'RD (%)'"+
-                           "from Province_KPI_Score_Band_PS_Daily group by Day,  Contractor order by Day, Contractor")
-RD_Hourly_Table=conn_performanceDB.fetchall()
-
-
-
-
+# This function is used to covert centimeter to inch
 def cm_to_inch(value):
     return value/2.54
 
+
+# This function is used to reduce sample rate with downsample Rate=Rate
 def downsample(Vector,Rate):
     downsample_vec=[]
     first_Index=0
@@ -307,54 +303,17 @@ def downsample(Vector,Rate):
 
 
 
-CC_Hourly_NAK_Alborz=[]
-CCTime_Hourly_NAK_Alborz=[]
-
-CC_Hourly_Iran=[]
-CCTime_Hourly_Iran=[]
 
 
-for i in range(len(CC_Hourly_Table)):
-
-    Row_Data=str(CC_Hourly_Table[i])
-    Row_Data=Row_Data.split(", ")
-    
-    Year1=Row_Data[0]
-    Date=Year1[19:23]+"/"+Row_Data[1]+"/"+Row_Data[2]
-    Contractor=Row_Data[5]
-    Contractor=Contractor[1:len(Contractor)-1]
-    CC=Row_Data[6]
-    if CC=='None)':
-        continue
-    CC=round(float(CC[0:len(CC)-1]),3)
-    if Contractor=="NAK-Alborz":
-        CC_Hourly_NAK_Alborz.append(CC)
-        CCTime_Hourly_NAK_Alborz.append(Date)
-    if Contractor=="IRAN":
-        CC_Hourly_Iran.append(CC)
-        CCTime_Hourly_Iran.append(Date)
 
 
-downsample_Rate=round(len(CCTime_Hourly_NAK_Alborz)/50)
-fig, ax1 = plt.subplots(figsize=(cm_to_inch(32),cm_to_inch(11)))
-#ax2 = ax1.twinx()
-#ax1.yaxis.tick_right()
-#ax2.yaxis.tick_left()
-x_Downsample=downsample(CCTime_Hourly_NAK_Alborz,downsample_Rate)
-X_Vec=[]
-x_index=0
-while len(X_Vec)!=len(x_Downsample):
-    X_Vec.append(x_index)
-    x_index=x_index+downsample_Rate
-ax1.plot(CCTime_Hourly_NAK_Alborz, CC_Hourly_NAK_Alborz, label='NAK-Alborz')
-ax1.plot(CCTime_Hourly_Iran, CC_Hourly_Iran,color = "darkorange", label='Country')
-ax1.set_xticks(X_Vec, x_Downsample,fontsize=6, rotation='vertical')
-leg = ax1.legend();
-font1 = {'family':'serif','color':'black','size':12}
-plt.title("NAK-Alborz & Country", fontdict = font1)
-plt.ylabel('CC (%)')
-grid(True)
-plt.savefig('CC_NAK-Alborz_Country.png')
+
+
+
+
+
+
+
 
 
 
@@ -2370,3 +2329,661 @@ CC_Hourly_Table=conn_performanceDB.fetchall()
 conn_performanceDB.execute("select Day, Contractor, sum([RD (%)]*[Total Payload (GB)])/sum([Total Payload (GB)]) as 'RD (%)'"+
                            "from Province_KPI_Score_Band_PS_Daily group by Day,  Contractor order by Day, Contractor")
 RD_Hourly_Table=conn_performanceDB.fetchall()
+
+
+
+
+CC_Hourly_NAK_Alborz=[]
+CCTime_Hourly_NAK_Alborz=[]
+RD_Hourly_NAK_Alborz=[]
+RDTime_Hourly_NAK_Alborz=[]
+
+CC_Hourly_NAK_North=[]
+CCTime_Hourly_NAK_North=[]
+RD_Hourly_NAK_North=[]
+RDTime_Hourly_NAK_North=[]
+
+CC_Hourly_NAK_Tehran=[]
+CCTime_Hourly_NAK_Tehran=[]
+RD_Hourly_NAK_Tehran=[]
+RDTime_Hourly_NAK_Tehran=[]
+
+CC_Hourly_NAK_Huawei=[]
+CCTime_Hourly_NAK_Huawei=[]
+RD_Hourly_NAK_Huawei=[]
+RDTime_Hourly_NAK_Huawei=[]
+
+CC_Hourly_NAK_Nokia=[]
+CCTime_Hourly_NAK_Nokia=[]
+RD_Hourly_NAK_Nokia=[]
+RDTime_Hourly_NAK_Nokia=[]
+
+CC_Hourly_BR_TEL=[]
+CCTime_Hourly_BR_TEL=[]
+RD_Hourly_BR_TEL=[]
+RDTime_Hourly_BR_TEL=[]
+
+CC_Hourly_Farafan=[]
+CCTime_Hourly_Farafan=[]
+RD_Hourly_Farafan=[]
+RDTime_Hourly_Farafan=[]
+
+CC_Hourly_Huawei=[]
+CCTime_Hourly_Huawei=[]
+RD_Hourly_Huawei=[]
+RDTime_Hourly_Huawei=[]
+
+
+CC_Hourly_Iran=[]
+CCTime_Hourly_Iran=[]
+RD_Hourly_Iran=[]
+RDTime_Hourly_Iran=[]
+
+
+for i in range(len(CC_Hourly_Table)):
+
+            Row_Data=str(CC_Hourly_Table[i])
+            Row_Data=Row_Data.split(", ")
+    
+            Year1=Row_Data[0]
+            Date=Year1[19:23]+"/"+Row_Data[1]+"/"+Row_Data[2]
+            Contractor=Row_Data[5]
+            Contractor=Contractor[1:len(Contractor)-1]
+            CC=Row_Data[6]
+            if CC=='None)':
+                continue
+            CC=round(float(CC[0:len(CC)-1]),3)
+            if Contractor=="NAK-Alborz":
+                CC_Hourly_NAK_Alborz.append(CC)
+                CCTime_Hourly_NAK_Alborz.append(Date)
+            if Contractor=="NAK-North":
+                CC_Hourly_NAK_North.append(CC)
+                CCTime_Hourly_NAK_North.append(Date)
+            if Contractor=="NAK-Tehran":
+                CC_Hourly_NAK_Tehran.append(CC)
+                CCTime_Hourly_NAK_Tehran.append(Date)
+            if Contractor=="NAK-Huawei":
+                CC_Hourly_NAK_Huawei.append(CC)
+                CCTime_Hourly_NAK_Huawei.append(Date)
+            if Contractor=="NAK-Nokia":
+                CC_Hourly_NAK_Nokia.append(CC)
+                CCTime_Hourly_NAK_Nokia.append(Date)
+            if Contractor=="BR-TEL":
+                CC_Hourly_BR_TEL.append(CC)
+                CCTime_Hourly_BR_TEL.append(Date)
+            if Contractor=="Farafan":
+                CC_Hourly_Farafan.append(CC)
+                CCTime_Hourly_Farafan.append(Date)
+            if Contractor=="Huawei":
+                CC_Hourly_Huawei.append(CC)
+                CCTime_Hourly_Huawei.append(Date)
+            if Contractor=="IRAN":
+                CC_Hourly_Iran.append(CC)
+                CCTime_Hourly_Iran.append(Date)
+
+for t in range(8):
+        if (t==0 ):
+            Contractor="NAK-Alborz"
+            CC_Hourly=CC_Hourly_NAK_Alborz
+            CCTime_Hourly=CCTime_Hourly_NAK_Alborz
+        if (t==1 ):
+            Contractor="NAK-North"
+            CC_Hourly=CC_Hourly_NAK_North
+            CCTime_Hourly=CCTime_Hourly_NAK_North
+        if (t==2 ):
+            Contractor="NAK-Tehran"
+            CC_Hourly=CC_Hourly_NAK_Tehran
+            CCTime_Hourly=CCTime_Hourly_NAK_Tehran
+        if (t==3 ):
+            Contractor="NAK-Huawei"
+            CC_Hourly=CC_Hourly_NAK_Huawei
+            CCTime_Hourly=CCTime_Hourly_NAK_Huawei
+        if (t==4 ):
+            Contractor="NAK-Nokia"
+            CC_Hourly=CC_Hourly_NAK_Nokia
+            CCTime_Hourly=CCTime_Hourly_NAK_Nokia
+        if (t==5 ):
+            Contractor="BR-TEL"
+            CC_Hourly=CC_Hourly_BR_TEL
+            CCTime_Hourly=CCTime_Hourly_BR_TEL
+        if (t==6 ):
+            Contractor="Farafan"
+            CC_Hourly=CC_Hourly_Farafan
+            CCTime_Hourly=CCTime_Hourly_Farafan
+        if (t==7 ):
+            Contractor="Huawei"
+            CC_Hourly=CC_Hourly_Huawei
+            CCTime_Hourly=CCTime_Hourly_Huawei
+
+        downsample_Rate=round(len(CCTime_Hourly)/50)
+        fig, ax1 = plt.subplots(figsize=(cm_to_inch(32),cm_to_inch(11)))
+        x_Downsample=downsample(CCTime_Hourly,downsample_Rate)
+        X_Vec=[]
+        x_index=0
+        while len(X_Vec)!=len(x_Downsample):
+             X_Vec.append(x_index)
+             x_index=x_index+downsample_Rate
+        ax1.plot(CCTime_Hourly, CC_Hourly, label=Contractor)
+        ax1.plot(CCTime_Hourly_Iran, CC_Hourly_Iran,color = "darkorange", label='Country')
+        ax1.set_xticks(X_Vec, x_Downsample,fontsize=5, rotation='vertical')
+        leg = ax1.legend();
+        font1 = {'family':'serif','color':'black','size':12}
+        plt.title(Contractor+" & Country", fontdict = font1)
+        plt.ylabel('CC (%)')
+        grid(True)
+        plt.savefig("CC_"+Contractor+"_Country.png")
+
+        image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CC_"+Contractor+"_Country.png")
+        y=100
+        x=20
+        h=1150
+        w=1050
+        CC_Cropped = image[x:w, y:h]
+        cv2.imwrite("CC_"+Contractor+"_Country.png", CC_Cropped)
+
+
+for i in range(len(RD_Hourly_Table)):
+
+            Row_Data=str(RD_Hourly_Table[i])
+            Row_Data=Row_Data.split(", ")
+    
+            Year1=Row_Data[0]
+            Date=Year1[19:23]+"/"+Row_Data[1]+"/"+Row_Data[2]
+            Contractor=Row_Data[5]
+            Contractor=Contractor[1:len(Contractor)-1]
+            RD=Row_Data[6]
+            if RD=='None)':
+                continue
+            RD=round(float(RD[0:len(RD)-1]),3)
+            if Contractor=="NAK-Alborz":
+                RD_Hourly_NAK_Alborz.append(RD)
+                RDTime_Hourly_NAK_Alborz.append(Date)
+            if Contractor=="NAK-North":
+                RD_Hourly_NAK_North.append(RD)
+                RDTime_Hourly_NAK_North.append(Date)
+            if Contractor=="NAK-Tehran":
+                RD_Hourly_NAK_Tehran.append(RD)
+                RDTime_Hourly_NAK_Tehran.append(Date)
+            if Contractor=="NAK-Huawei":
+                RD_Hourly_NAK_Huawei.append(RD)
+                RDTime_Hourly_NAK_Huawei.append(Date)
+            if Contractor=="NAK-Nokia":
+                RD_Hourly_NAK_Nokia.append(RD)
+                RDTime_Hourly_NAK_Nokia.append(Date)
+            if Contractor=="BR-TEL":
+                RD_Hourly_BR_TEL.append(RD)
+                RDTime_Hourly_BR_TEL.append(Date)
+            if Contractor=="Farafan":
+                RD_Hourly_Farafan.append(RD)
+                RDTime_Hourly_Farafan.append(Date)
+            if Contractor=="Huawei":
+                RD_Hourly_Huawei.append(RD)
+                RDTime_Hourly_Huawei.append(Date)
+            if Contractor=="IRAN":
+                RD_Hourly_Iran.append(RD)
+                RDTime_Hourly_Iran.append(Date)
+
+for t in range(8):
+        if (t==0 ):
+            Contractor="NAK-Alborz"
+            RD_Hourly=RD_Hourly_NAK_Alborz
+            RDTime_Hourly=RDTime_Hourly_NAK_Alborz
+        if (t==1 ):
+            Contractor="NAK-North"
+            RD_Hourly=RD_Hourly_NAK_North
+            RDTime_Hourly=RDTime_Hourly_NAK_North
+        if (t==2 ):
+            Contractor="NAK-Tehran"
+            RD_Hourly=RD_Hourly_NAK_Tehran
+            RDTime_Hourly=RDTime_Hourly_NAK_Tehran
+        if (t==3 ):
+            Contractor="NAK-Huawei"
+            RD_Hourly=RD_Hourly_NAK_Huawei
+            RDTime_Hourly=RDTime_Hourly_NAK_Huawei
+        if (t==4 ):
+            Contractor="NAK-Nokia"
+            RD_Hourly=RD_Hourly_NAK_Nokia
+            RDTime_Hourly=RDTime_Hourly_NAK_Nokia
+        if (t==5 ):
+            Contractor="BR-TEL"
+            RD_Hourly=RD_Hourly_BR_TEL
+            RDTime_Hourly=RDTime_Hourly_BR_TEL
+        if (t==6 ):
+            Contractor="Farafan"
+            RD_Hourly=RD_Hourly_Farafan
+            RDTime_Hourly=RDTime_Hourly_Farafan
+        if (t==7 ):
+            Contractor="Huawei"
+            RD_Hourly=RD_Hourly_Huawei
+            RDTime_Hourly=RDTime_Hourly_Huawei
+
+        downsample_Rate=round(len(RDTime_Hourly)/50)
+        fig, ax1 = plt.subplots(figsize=(cm_to_inch(32),cm_to_inch(11)))
+        x_Downsample=downsample(RDTime_Hourly,downsample_Rate)
+        X_Vec=[]
+        x_index=0
+        while len(X_Vec)!=len(x_Downsample):
+             X_Vec.append(x_index)
+             x_index=x_index+downsample_Rate
+        ax1.plot(RDTime_Hourly, RD_Hourly, label=Contractor)
+        ax1.plot(RDTime_Hourly_Iran, RD_Hourly_Iran,color = "darkorange", label='Country')
+        ax1.set_xticks(X_Vec, x_Downsample,fontsize=5, rotation='vertical')
+        leg = ax1.legend();
+        font1 = {'family':'serif','color':'black','size':12}
+        plt.title(Contractor+" & Country", fontdict = font1)
+        plt.ylabel('RD (%)')
+        grid(True)
+        plt.savefig("RD_"+Contractor+"_Country.png")
+
+        image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\RD_"+Contractor+"_Country.png")
+        y=100
+        x=20
+        h=1150
+        w=1050
+        RD_Cropped = image[x:w, y:h]
+        cv2.imwrite("RD_"+Contractor+"_Country.png", RD_Cropped)
+
+        
+        slide = prs.slides.add_slide(blank_slide_layout)
+
+        pic_left_1  = int(prs.slide_width *0.047)
+        pic_top_1   = int(prs.slide_width *0.01)
+        pic_width_1 = int(prs.slide_width *0.9)
+
+
+        pic_left_3  = int(prs.slide_width *0.047)
+        pic_top_3   = int(prs.slide_width *0.38)
+        pic_width_3 = int(prs.slide_width *0.9)
+
+
+
+        pic = slide.shapes.add_picture("D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CC_"+Contractor+"_Country.png", pic_left_1, pic_top_1, pic_width_1)
+        pic = slide.shapes.add_picture("D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\RD_"+Contractor+"_Country.png", pic_left_3, pic_top_3, pic_width_3)
+
+
+        prs.save('test.pptx')
+
+
+
+# ******************************************************************************************
+# (((((((((((((((((((((((((((((((((((((   CS and PS    )))))))))))))))))))))))))))))))))))))
+# ******************************************************************************************
+
+conn_performanceDB.execute("select Wk,Contractor, avg([CSSR_2G]) as 'CSSR_2G', avg([CSSR_3G]) as 'CSSR_3G', avg([CDR_2G]) as 'CDR_2G', avg([CDR_3G]) as 'CDR_3G' from ("+
+                           "select Wk, Contractor,PIndex, SUM([2G TCH Traffic]*[CSSR_MCI])/sum([2G TCH Traffic]) as 'CSSR_2G',"+
+                              "SUM([3G_CS_Traffic]*[CS_CSSR])/sum([3G_CS_Traffic]) as 'CSSR_3G',"+
+                              "SUM([2G TCH Traffic]*[CDR])/sum([2G TCH Traffic]) as 'CDR_2G',"+
+                              "SUM([3G_CS_Traffic]*[3G_CS_Drop])/sum([3G_CS_Traffic]) as 'CDR_3G' "+
+							  "from  Province_KPI_Score_Band_CS_Daily  group by Wk, Contractor, PIndex ) tble  group by Wk, Contractor  order by Wk")
+CC_Table=conn_performanceDB.fetchall()
+
+
+conn_performanceDB.execute("select Wk,Contractor, avg([PSSR_2G]) as 'PSSR_2G', avg([PSSR_3G]) as 'PSSR_3G', avg([PSSR_4G]) as 'PSSR_4G', avg([PDR_2G]) as 'PDR_2G', avg([PDR_3G]) as 'PDR_3G', avg([PDR_4G]) as 'PDR_4G' from ("+
+                             "select Wk, Contractor,[Province Index], SUM([2G PS Traffic (GB)]*[TBF_Establishment_SR])/sum([2G PS Traffic (GB)]) as 'PSSR_2G',"+
+							  "SUM([3G Payload (GB)]*[PS_CSSR])/sum([3G Payload (GB)]) as 'PSSR_3G',"+
+                              "SUM([4G Payload (GB)]*[Initital E-RAB SR])/sum([4G Payload (GB)]) as 'PSSR_4G',"+
+                              "SUM([2G PS Traffic (GB)]*[TBF_Drop])/sum([2G PS Traffic (GB)]) as 'PDR_2G',"+
+                              "SUM([3G Payload (GB)]*[PS_Call_Drop])/sum([3G Payload (GB)]) as 'PDR_3G',"+
+                              "SUM([4G Payload (GB)]*[ERAB_Drop_Rate])/sum([4G Payload (GB)]) as 'PDR_4G' "+
+							  "from  Province_KPI_Score_Band_PS_Daily group by Wk, Contractor, [Province Index] ) tble group by Wk, Contractor  order by Wk")
+RD_Table=conn_performanceDB.fetchall()
+
+
+# Change Code from this point
+
+CC2_NAK_Alborz=[]
+CC2_NAK_Tehran=[]
+CC2_NAK_North=[]
+CC2_NAK_Nokia=[]
+CC2_NAK_Huawei=[]
+CC2_Farafan=[]
+CC2_BR_TEL=[]
+CC2_Huawei=[]
+CC2_Iran=[]
+
+CC3_NAK_Alborz=[]
+CC3_NAK_Tehran=[]
+CC3_NAK_North=[]
+CC3_NAK_Nokia=[]
+CC3_NAK_Huawei=[]
+CC3_Farafan=[]
+CC3_BR_TEL=[]
+CC3_Huawei=[]
+CC3_Iran=[]
+
+CC_NAK_Alborz=[]
+CC_NAK_Tehran=[]
+CC_NAK_North=[]
+CC_NAK_Nokia=[]
+CC_NAK_Huawei=[]
+CC_Farafan=[]
+CC_BR_TEL=[]
+CC_Huawei=[]
+CC_Iran=[]
+
+
+
+CS_Traffic_2G_NAK_Alborz=[]
+CS_Traffic_2G_NAK_Tehran=[]
+CS_Traffic_2G_NAK_North=[]
+CS_Traffic_2G_NAK_Nokia=[]
+CS_Traffic_2G_NAK_Huawei=[]
+CS_Traffic_2G_Farafan=[]
+CS_Traffic_2G_BR_TEL=[]
+CS_Traffic_2G_Huawei=[]
+CS_Traffic_2G_Iran=[]
+
+CS_Traffic_3G_NAK_Alborz=[]
+CS_Traffic_3G_NAK_Tehran=[]
+CS_Traffic_3G_NAK_North=[]
+CS_Traffic_3G_NAK_Nokia=[]
+CS_Traffic_3G_NAK_Huawei=[]
+CS_Traffic_3G_Farafan=[]
+CS_Traffic_3G_BR_TEL=[]
+CS_Traffic_3G_Huawei=[]
+CS_Traffic_3G_Iran=[]
+
+CS_Traffic_4G_NAK_Alborz=[]
+CS_Traffic_4G_NAK_Tehran=[]
+CS_Traffic_4G_NAK_North=[]
+CS_Traffic_4G_NAK_Nokia=[]
+CS_Traffic_4G_NAK_Huawei=[]
+CS_Traffic_4G_Farafan=[]
+CS_Traffic_4G_BR_TEL=[]
+CS_Traffic_4G_Huawei=[]
+CS_Traffic_4G_Iran=[]
+
+Week_Vec=[]
+
+for i in range(len(CC_Table)):
+    Row_Data=str(CC_Table[i])
+    Row_Data=Row_Data.split(", ")
+
+    Week=Row_Data[0]
+    Contractor=Row_Data[1]
+    CC2_Str=Row_Data[2]
+    CC2_Val=round(float(CC2_Str[0:len(CC2_Str)-1]),2)
+    CC3_Str=Row_Data[3]
+    CC3_Val=round(float(CC3_Str[0:len(CC3_Str)-1]),2)
+    CC_Str=Row_Data[4]
+    CC_Val=round(float(CC_Str[0:len(CC_Str)-1]),2)
+    CS_2G_Str=Row_Data[5]
+    CS_2G_Val=round(float(CS_2G_Str[0:len(CS_2G_Str)-1]),2)
+    CS_3G_Str=Row_Data[6]
+    CS_3G_Val=round(float(CS_3G_Str[0:len(CS_3G_Str)-1]),2)
+    CS_4G_Str=Row_Data[7]
+    CS_4G_Val=round(float(CS_4G_Str[0:len(CS_4G_Str)-1]),2)
+    CS_Str=Row_Data[8]
+    CS_Val=round(float(CS_Str[0:len(CS_Str)-1]),2)
+
+    Week=Week[2:9]
+    Contractor=Contractor[1:len(Contractor)-1]
+    
+
+    #if Week=='1401-33':
+    #    break
+
+    if (Contractor=='NAK-Alborz'):
+        Week_Vec.append('W'+Week[5:7])
+        CC2_NAK_Alborz.append(CC2_Val)
+        CC3_NAK_Alborz.append(CC3_Val)
+        CC_NAK_Alborz.append(CC_Val)
+        CS_Traffic_2G_NAK_Alborz.append(CS_2G_Val/1e3)
+        CS_Traffic_3G_NAK_Alborz.append(CS_3G_Val/1e3)
+        CS_Traffic_4G_NAK_Alborz.append(CS_4G_Val/1e3)
+    if (Contractor=='NAK-Tehran'):
+        CC2_NAK_Tehran.append(CC2_Val)
+        CC3_NAK_Tehran.append(CC3_Val)
+        CC_NAK_Tehran.append(CC_Val)
+        CS_Traffic_2G_NAK_Tehran.append(CS_2G_Val/1e3)
+        CS_Traffic_3G_NAK_Tehran.append(CS_3G_Val/1e3)
+        CS_Traffic_4G_NAK_Tehran.append(CS_4G_Val/1e3)
+    if (Contractor=='NAK-North'):
+        CC2_NAK_North.append(CC2_Val)
+        CC3_NAK_North.append(CC3_Val)
+        CC_NAK_North.append(CC_Val)
+        CS_Traffic_2G_NAK_North.append(CS_2G_Val/1e3)
+        CS_Traffic_3G_NAK_North.append(CS_3G_Val/1e3)
+        CS_Traffic_4G_NAK_North.append(CS_4G_Val/1e3)
+    if (Contractor=='NAK-Nokia'):
+        CC2_NAK_Nokia.append(CC2_Val)
+        CC3_NAK_Nokia.append(CC3_Val)
+        CC_NAK_Nokia.append(CC_Val)
+        CS_Traffic_2G_NAK_Nokia.append(CS_2G_Val/1e3)
+        CS_Traffic_3G_NAK_Nokia.append(CS_3G_Val/1e3)
+        CS_Traffic_4G_NAK_Nokia.append(CS_4G_Val/1e3)
+    if (Contractor=='NAK-Huawei'):
+        CC2_NAK_Huawei.append(CC2_Val)
+        CC3_NAK_Huawei.append(CC3_Val)
+        CC_NAK_Huawei.append(CC_Val)
+        CS_Traffic_2G_NAK_Huawei.append(CS_2G_Val/1e3)
+        CS_Traffic_3G_NAK_Huawei.append(CS_3G_Val/1e3)
+        CS_Traffic_4G_NAK_Huawei.append(CS_4G_Val/1e3)
+    if (Contractor=='Farafan'):
+        CC2_Farafan.append(CC2_Val)
+        CC3_Farafan.append(CC3_Val)
+        CC_Farafan.append(CC_Val)
+        CS_Traffic_2G_Farafan.append(CS_2G_Val/1e3)
+        CS_Traffic_3G_Farafan.append(CS_3G_Val/1e3)
+        CS_Traffic_4G_Farafan.append(CS_4G_Val/1e3)
+    if (Contractor=='BR-TEL'):
+        CC2_BR_TEL.append(CC2_Val)
+        CC3_BR_TEL.append(CC3_Val)
+        CC_BR_TEL.append(CC_Val)
+        CS_Traffic_2G_BR_TEL.append(CS_2G_Val/1e3)
+        CS_Traffic_3G_BR_TEL.append(CS_3G_Val/1e3)
+        CS_Traffic_4G_BR_TEL.append(CS_4G_Val/1e3)
+    if (Contractor=='Huawei'):
+        CC2_Huawei.append(CC2_Val)
+        CC3_Huawei.append(CC3_Val)
+        CC_Huawei.append(CC_Val)
+        CS_Traffic_2G_Huawei.append(CS_2G_Val/1e3)
+        CS_Traffic_3G_Huawei.append(CS_3G_Val/1e3)
+        CS_Traffic_4G_Huawei.append(CS_4G_Val/1e3)
+    if (Contractor=='IRAN'):
+        CC2_Iran.append(CC2_Val)
+        CC3_Iran.append(CC3_Val)
+        CC_Iran.append(CC_Val)
+        CS_Traffic_2G_Iran.append(CS_2G_Val/1e3)
+        CS_Traffic_3G_Iran.append(CS_3G_Val/1e3)
+        CS_Traffic_4G_Iran.append(CS_4G_Val/1e3)
+
+
+
+Last_CC2=[CC2_NAK_Alborz[len(CC2_NAK_Alborz)-1], CC2_NAK_Tehran[len(CC2_NAK_Alborz)-1], CC2_NAK_North[len(CC2_NAK_Alborz)-1], CC2_NAK_Nokia[len(CC2_NAK_Alborz)-1], CC2_NAK_Huawei[len(CC2_NAK_Alborz)-1], CC2_Farafan[len(CC2_NAK_Alborz)-1], CC2_BR_TEL[len(CC2_NAK_Alborz)-1], CC2_Huawei[len(CC2_NAK_Alborz)-1] ]
+Index_of_Sort_CC2=np.argsort(Last_CC2)
+Data_Sorted_Array_CC2=[]
+x_Labels_CC2=[];
+for k in range(len(Index_of_Sort_CC2)):
+    if Index_of_Sort_CC2[k]==0:
+        Data_Sorted_Array_CC2.append(CC2_NAK_Alborz)
+        x_Labels_CC2.append('NAK-Alborz')
+    if Index_of_Sort_CC2[k]==1:
+        Data_Sorted_Array_CC2.append(CC2_NAK_Tehran)
+        x_Labels_CC2.append('NAK-Tehran')
+    if Index_of_Sort_CC2[k]==2:
+        Data_Sorted_Array_CC2.append(CC2_NAK_North)
+        x_Labels_CC2.append('NAK-North')
+    if Index_of_Sort_CC2[k]==3:
+        Data_Sorted_Array_CC2.append(CC2_NAK_Nokia)
+        x_Labels_CC2.append('NAK-Nokia')
+    if Index_of_Sort_CC2[k]==4:
+        Data_Sorted_Array_CC2.append(CC2_NAK_Huawei)
+        x_Labels_CC2.append('NAK-Huawei')
+    if Index_of_Sort_CC2[k]==5:
+        Data_Sorted_Array_CC2.append(CC2_Farafan)
+        x_Labels_CC2.append('Farafan')
+    if Index_of_Sort_CC2[k]==6:
+        Data_Sorted_Array_CC2.append(CC2_BR_TEL)
+        x_Labels_CC2.append('BR-TEL')
+    if Index_of_Sort_CC2[k]==7:
+        Data_Sorted_Array_CC2.append(CC2_Huawei)
+        x_Labels_CC2.append('Huawei')
+
+
+data=np.array(Data_Sorted_Array_CC2)
+
+x = np.arange(data.shape[0])
+dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
+d = 1./(data.shape[1]+2.)
+
+def cm_to_inch(value):
+    return value/2.54
+plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
+axes= plt.axes()
+
+
+for i in range(data.shape[1]):
+    plt.bar(x+dx[i],data[:,i], color = "orange",  width=d, label="label {}".format(i))
+
+
+for i , v in enumerate(Last_CC2):
+    plt.text( i + dx[31],Last_CC2[Index_of_Sort_CC2[i]] , str(Last_CC2[Index_of_Sort_CC2[i]]), color='black', size=12, fontweight='bold')
+
+axes.set_xticks(x, x_Labels_CC2)
+font1 = {'family':'serif','color':'black','size':17}
+plt.title("CC2(%)", fontdict = font1)
+plt.ylim(75, 100)
+grid(True)
+plt.savefig('CC2.png')
+
+image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CC2.png")
+y=80
+x=10
+h=1000
+w=520
+CC2_Bar_Cropped = image[x:w, y:h]
+cv2.imwrite("CC2.png", CC2_Bar_Cropped)
+
+
+
+Last_CC3=[CC3_NAK_Alborz[len(CC3_NAK_Alborz)-1], CC3_NAK_Tehran[len(CC3_NAK_Alborz)-1], CC3_NAK_North[len(CC3_NAK_Alborz)-1], CC3_NAK_Nokia[len(CC3_NAK_Alborz)-1], CC3_NAK_Huawei[len(CC3_NAK_Alborz)-1], CC3_Farafan[len(CC3_NAK_Alborz)-1], CC3_BR_TEL[len(CC3_NAK_Alborz)-1], CC3_Huawei[len(CC3_NAK_Alborz)-1] ]
+Index_of_Sort_CC3=np.argsort(Last_CC3)
+Data_Sorted_Array_CC3=[]
+x_Labels_CC3=[];
+for k in range(len(Index_of_Sort_CC3)):
+    if Index_of_Sort_CC3[k]==0:
+        Data_Sorted_Array_CC3.append(CC3_NAK_Alborz)
+        x_Labels_CC3.append('NAK-Alborz')
+    if Index_of_Sort_CC3[k]==1:
+        Data_Sorted_Array_CC3.append(CC3_NAK_Tehran)
+        x_Labels_CC3.append('NAK-Tehran')
+    if Index_of_Sort_CC3[k]==2:
+        Data_Sorted_Array_CC3.append(CC3_NAK_North)
+        x_Labels_CC3.append('NAK-North')
+    if Index_of_Sort_CC3[k]==3:
+        Data_Sorted_Array_CC3.append(CC3_NAK_Nokia)
+        x_Labels_CC3.append('NAK-Nokia')
+    if Index_of_Sort_CC3[k]==4:
+        Data_Sorted_Array_CC3.append(CC3_NAK_Huawei)
+        x_Labels_CC3.append('NAK-Huawei')
+    if Index_of_Sort_CC3[k]==5:
+        Data_Sorted_Array_CC3.append(CC3_Farafan)
+        x_Labels_CC3.append('Farafan')
+    if Index_of_Sort_CC3[k]==6:
+        Data_Sorted_Array_CC3.append(CC3_BR_TEL)
+        x_Labels_CC3.append('BR-TEL')
+    if Index_of_Sort_CC3[k]==7:
+        Data_Sorted_Array_CC3.append(CC3_Huawei)
+        x_Labels_CC3.append('Huawei')
+
+
+data=np.array(Data_Sorted_Array_CC3)
+
+x = np.arange(data.shape[0])
+dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
+d = 1./(data.shape[1]+2.)
+
+def cm_to_inch(value):
+    return value/2.54
+plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
+axes= plt.axes()
+
+
+for i in range(data.shape[1]):
+    plt.bar(x+dx[i],data[:,i], color = "orange",  width=d, label="label {}".format(i))
+
+
+for i , v in enumerate(Last_CC3):
+    plt.text( i + dx[31],Last_CC3[Index_of_Sort_CC3[i]] , str(Last_CC3[Index_of_Sort_CC3[i]]), color='black', size=12, fontweight='bold')
+
+axes.set_xticks(x, x_Labels_CC3)
+font1 = {'family':'serif','color':'black','size':17}
+plt.title("CC3(%)", fontdict = font1)
+plt.ylim(75, 100)
+grid(True)
+plt.savefig('CC3.png')
+
+image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CC3.png")
+y=80
+x=10
+h=1000
+w=520
+CC3_Bar_Cropped = image[x:w, y:h]
+cv2.imwrite("CC3.png", CC3_Bar_Cropped)
+
+Last_CC=[CC_NAK_Alborz[len(CC_NAK_Alborz)-1], CC_NAK_Tehran[len(CC_NAK_Alborz)-1], CC_NAK_North[len(CC_NAK_Alborz)-1], CC_NAK_Nokia[len(CC_NAK_Alborz)-1], CC_NAK_Huawei[len(CC_NAK_Alborz)-1], CC_Farafan[len(CC_NAK_Alborz)-1], CC_BR_TEL[len(CC_NAK_Alborz)-1], CC_Huawei[len(CC_NAK_Alborz)-1] ]
+Index_of_Sort_CC=np.argsort(Last_CC)
+Data_Sorted_Array_CC=[]
+x_Labels_CC=[];
+for k in range(len(Index_of_Sort_CC)):
+    if Index_of_Sort_CC[k]==0:
+        Data_Sorted_Array_CC.append(CC_NAK_Alborz)
+        x_Labels_CC.append('NAK-Alborz')
+    if Index_of_Sort_CC[k]==1:
+        Data_Sorted_Array_CC.append(CC_NAK_Tehran)
+        x_Labels_CC.append('NAK-Tehran')
+    if Index_of_Sort_CC[k]==2:
+        Data_Sorted_Array_CC.append(CC_NAK_North)
+        x_Labels_CC.append('NAK-North')
+    if Index_of_Sort_CC[k]==3:
+        Data_Sorted_Array_CC.append(CC_NAK_Nokia)
+        x_Labels_CC.append('NAK-Nokia')
+    if Index_of_Sort_CC[k]==4:
+        Data_Sorted_Array_CC.append(CC_NAK_Huawei)
+        x_Labels_CC.append('NAK-Huawei')
+    if Index_of_Sort_CC[k]==5:
+        Data_Sorted_Array_CC.append(CC_Farafan)
+        x_Labels_CC.append('Farafan')
+    if Index_of_Sort_CC[k]==6:
+        Data_Sorted_Array_CC.append(CC_BR_TEL)
+        x_Labels_CC.append('BR-TEL')
+    if Index_of_Sort_CC[k]==7:
+        Data_Sorted_Array_CC.append(CC_Huawei)
+        x_Labels_CC.append('Huawei')
+
+
+data=np.array(Data_Sorted_Array_CC)
+
+x = np.arange(data.shape[0])
+dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
+d = 1./(data.shape[1]+2.)
+
+def cm_to_inch(value):
+    return value/2.54
+plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
+axes= plt.axes()
+
+
+for i in range(data.shape[1]):
+    plt.bar(x+dx[i],data[:,i], color = "orange",  width=d, label="label {}".format(i))
+
+
+for i , v in enumerate(Last_CC):
+    plt.text( i + dx[31],Last_CC[Index_of_Sort_CC[i]] , str(Last_CC[Index_of_Sort_CC[i]]), color='black', size=12, fontweight='bold')
+
+axes.set_xticks(x, x_Labels_CC)
+font1 = {'family':'serif','color':'black','size':17}
+plt.title("CC(%)", fontdict = font1)
+plt.ylim(75, 100)
+grid(True)
+plt.savefig('CC.png')
+
+image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CC.png")
+y=80
+x=10
+h=1000
+w=520
+CC_Bar_Cropped = image[x:w, y:h]
+cv2.imwrite("CC.png", CC_Bar_Cropped)
+
