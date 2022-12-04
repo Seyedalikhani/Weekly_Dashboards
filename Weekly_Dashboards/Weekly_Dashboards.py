@@ -711,7 +711,7 @@ CDR_3G_Bar_Cropped = image[x:w, y:h]
 cv2.imwrite("CDR_3G.png", CDR_3G_Bar_Cropped)
  
 
-#
+# 
 
 
 
