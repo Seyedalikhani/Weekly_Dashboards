@@ -307,418 +307,6 @@ def downsample(Vector,Rate):
 
 
 
-conn_performanceDB.execute("select Wk,Contractor, avg([CSSR_2G]) as 'CSSR_2G', avg([CSSR_3G]) as 'CSSR_3G', avg([CDR_2G]) as 'CDR_2G', avg([CDR_3G]) as 'CDR_3G' from ("+
-                           "select Wk, Contractor,PIndex, SUM([2G TCH Traffic]*[CSSR_MCI])/sum([2G TCH Traffic]) as 'CSSR_2G',"+
-                              "SUM([3G_CS_Traffic]*[CS_CSSR])/sum([3G_CS_Traffic]) as 'CSSR_3G',"+
-                              "SUM([2G TCH Traffic]*[CDR])/sum([2G TCH Traffic]) as 'CDR_2G',"+
-                              "SUM([3G_CS_Traffic]*[3G_CS_Drop])/sum([3G_CS_Traffic]) as 'CDR_3G' "+
-							  "from  Province_KPI_Score_Band_CS_Daily  group by Wk, Contractor, PIndex ) tble  group by Wk, Contractor  order by Wk")
-CS_Table=conn_performanceDB.fetchall()
-
-
-conn_performanceDB.execute("select Wk,Contractor, avg([PSSR_2G]) as 'PSSR_2G', avg([PSSR_3G]) as 'PSSR_3G', avg([PSSR_4G]) as 'PSSR_4G', avg([PDR_2G]) as 'PDR_2G', avg([PDR_3G]) as 'PDR_3G', avg([PDR_4G]) as 'PDR_4G' from ("+
-                             "select Wk, Contractor,[Province Index], SUM([2G PS Traffic (GB)]*[TBF_Establishment_SR])/sum([2G PS Traffic (GB)]) as 'PSSR_2G',"+
-							  "SUM([3G Payload (GB)]*[PS_CSSR])/sum([3G Payload (GB)]) as 'PSSR_3G',"+
-                              "SUM([4G Payload (GB)]*[Initital E-RAB SR])/sum([4G Payload (GB)]) as 'PSSR_4G',"+
-                              "SUM([2G PS Traffic (GB)]*[TBF_Drop])/sum([2G PS Traffic (GB)]) as 'PDR_2G',"+
-                              "SUM([3G Payload (GB)]*[PS_Call_Drop])/sum([3G Payload (GB)]) as 'PDR_3G',"+
-                              "SUM([4G Payload (GB)]*[ERAB_Drop_Rate])/sum([4G Payload (GB)]) as 'PDR_4G' "+
-							  "from  Province_KPI_Score_Band_PS_Daily group by Wk, Contractor, [Province Index] ) tble group by Wk, Contractor  order by Wk")
-PS_Table=conn_performanceDB.fetchall()
-
-
-# Change Code from this point
-
-CSSR_2G_NAK_Alborz=[]
-CSSR_2G_NAK_Tehran=[]
-CSSR_2G_NAK_North=[]
-CSSR_2G_NAK_Nokia=[]
-CSSR_2G_NAK_Huawei=[]
-CSSR_2G_Farafan=[]
-CSSR_2G_BR_TEL=[]
-CSSR_2G_Huawei=[]
-
-
-CSSR_3G_NAK_Alborz=[]
-CSSR_3G_NAK_Tehran=[]
-CSSR_3G_NAK_North=[]
-CSSR_3G_NAK_Nokia=[]
-CSSR_3G_NAK_Huawei=[]
-CSSR_3G_Farafan=[]
-CSSR_3G_BR_TEL=[]
-CSSR_3G_Huawei=[]
-
-
-CDR_2G_NAK_Alborz=[]
-CDR_2G_NAK_Tehran=[]
-CDR_2G_NAK_North=[]
-CDR_2G_NAK_Nokia=[]
-CDR_2G_NAK_Huawei=[]
-CDR_2G_Farafan=[]
-CDR_2G_BR_TEL=[]
-CDR_2G_Huawei=[]
-
-
-CDR_3G_NAK_Alborz=[]
-CDR_3G_NAK_Tehran=[]
-CDR_3G_NAK_North=[]
-CDR_3G_NAK_Nokia=[]
-CDR_3G_NAK_Huawei=[]
-CDR_3G_Farafan=[]
-CDR_3G_BR_TEL=[]
-CDR_3G_Huawei=[]
-
-
-Week_Vec=[]
-
-for i in range(len(CS_Table)):
-    Row_Data=str(CS_Table[i])
-    Row_Data=Row_Data.split(", ")
-
-    Week=Row_Data[0]
-    Contractor=Row_Data[1]
-    CSSR_2G_Str=Row_Data[2]
-    CSSR_2G_Val=round(float(CSSR_2G_Str[0:len(CSSR_2G_Str)-1]),2)
-    CSSR_3G_Str=Row_Data[3]
-    CSSR_3G_Val=round(float(CSSR_3G_Str[0:len(CSSR_3G_Str)-1]),2)
-
-    CDR_2G_Str=Row_Data[4]
-    CDR_2G_Val=round(float(CDR_2G_Str[0:len(CDR_2G_Str)-1]),2)
-    CDR_3G_Str=Row_Data[5]
-    CDR_3G_Val=round(float(CDR_3G_Str[0:len(CDR_3G_Str)-1]),2)
-
-    Week=Week[2:9]
-    Contractor=Contractor[1:len(Contractor)-1]
-    
-
-    #if Week=='1401-33':
-    #    break
-
-    if (Contractor=='NAK-Alborz'):
-        Week_Vec.append('W'+Week[5:7])
-        CSSR_2G_NAK_Alborz.append(CSSR_2G_Val)
-        CSSR_3G_NAK_Alborz.append(CSSR_3G_Val)
-        CDR_2G_NAK_Alborz.append(CDR_2G_Val)
-        CDR_3G_NAK_Alborz.append(CDR_3G_Val)
-    if (Contractor=='NAK-Tehran'):
-        CSSR_2G_NAK_Tehran.append(CSSR_2G_Val)
-        CSSR_3G_NAK_Tehran.append(CSSR_3G_Val)
-        CDR_2G_NAK_Tehran.append(CDR_2G_Val)
-        CDR_3G_NAK_Tehran.append(CDR_3G_Val)
-    if (Contractor=='NAK-North'):
-        CSSR_2G_NAK_North.append(CSSR_2G_Val)
-        CSSR_3G_NAK_North.append(CSSR_3G_Val)
-        CDR_2G_NAK_North.append(CDR_2G_Val)
-        CDR_3G_NAK_North.append(CDR_3G_Val)
-    if (Contractor=='NAK-Nokia'):
-        CSSR_2G_NAK_Nokia.append(CSSR_2G_Val)
-        CSSR_3G_NAK_Nokia.append(CSSR_3G_Val)
-        CDR_2G_NAK_Nokia.append(CDR_2G_Val)
-        CDR_3G_NAK_Nokia.append(CDR_3G_Val)
-    if (Contractor=='NAK-Huawei'):
-        CSSR_2G_NAK_Huawei.append(CSSR_2G_Val)
-        CSSR_3G_NAK_Huawei.append(CSSR_3G_Val)
-        CDR_2G_NAK_Huawei.append(CDR_2G_Val)
-        CDR_3G_NAK_Huawei.append(CDR_3G_Val)
-    if (Contractor=='Farafan'):
-        CSSR_2G_Farafan.append(CSSR_2G_Val)
-        CSSR_3G_Farafan.append(CSSR_3G_Val)
-        CDR_2G_Farafan.append(CDR_2G_Val)
-        CDR_3G_Farafan.append(CDR_3G_Val)
-    if (Contractor=='BR-TEL'):
-        CSSR_2G_BR_TEL.append(CSSR_2G_Val)
-        CSSR_3G_BR_TEL.append(CSSR_3G_Val)
-        CDR_2G_BR_TEL.append(CDR_2G_Val)
-        CDR_3G_BR_TEL.append(CDR_3G_Val)
-    if (Contractor=='Huawei'):
-        CSSR_2G_Huawei.append(CSSR_2G_Val)
-        CSSR_3G_Huawei.append(CSSR_3G_Val)
-        CDR_2G_Huawei.append(CDR_2G_Val)
-        CDR_3G_Huawei.append(CDR_3G_Val)
-
-
-
-Last_CSSR_2G=[CSSR_2G_NAK_Alborz[len(CSSR_2G_NAK_Alborz)-1], CSSR_2G_NAK_Tehran[len(CSSR_2G_NAK_Alborz)-1], CSSR_2G_NAK_North[len(CSSR_2G_NAK_Alborz)-1], CSSR_2G_NAK_Nokia[len(CSSR_2G_NAK_Alborz)-1], CSSR_2G_NAK_Huawei[len(CSSR_2G_NAK_Alborz)-1], CSSR_2G_Farafan[len(CSSR_2G_NAK_Alborz)-1], CSSR_2G_BR_TEL[len(CSSR_2G_NAK_Alborz)-1], CSSR_2G_Huawei[len(CSSR_2G_NAK_Alborz)-1] ]
-Index_of_Sort_CSSR_2G=np.argsort(Last_CSSR_2G)
-Data_Sorted_Array_CSSR_2G=[]
-x_Labels_CSSR_2G=[];
-for k in range(len(Index_of_Sort_CSSR_2G)):
-    if Index_of_Sort_CSSR_2G[k]==0:
-        Data_Sorted_Array_CSSR_2G.append(CSSR_2G_NAK_Alborz)
-        x_Labels_CSSR_2G.append('NAK-Alborz')
-    if Index_of_Sort_CSSR_2G[k]==1:
-        Data_Sorted_Array_CSSR_2G.append(CSSR_2G_NAK_Tehran)
-        x_Labels_CSSR_2G.append('NAK-Tehran')
-    if Index_of_Sort_CSSR_2G[k]==2:
-        Data_Sorted_Array_CSSR_2G.append(CSSR_2G_NAK_North)
-        x_Labels_CSSR_2G.append('NAK-North')
-    if Index_of_Sort_CSSR_2G[k]==3:
-        Data_Sorted_Array_CSSR_2G.append(CSSR_2G_NAK_Nokia)
-        x_Labels_CSSR_2G.append('NAK-Nokia')
-    if Index_of_Sort_CSSR_2G[k]==4:
-        Data_Sorted_Array_CSSR_2G.append(CSSR_2G_NAK_Huawei)
-        x_Labels_CSSR_2G.append('NAK-Huawei')
-    if Index_of_Sort_CSSR_2G[k]==5:
-        Data_Sorted_Array_CSSR_2G.append(CSSR_2G_Farafan)
-        x_Labels_CSSR_2G.append('Farafan')
-    if Index_of_Sort_CSSR_2G[k]==6:
-        Data_Sorted_Array_CSSR_2G.append(CSSR_2G_BR_TEL)
-        x_Labels_CSSR_2G.append('BR-TEL')
-    if Index_of_Sort_CSSR_2G[k]==7:
-        Data_Sorted_Array_CSSR_2G.append(CSSR_2G_Huawei)
-        x_Labels_CSSR_2G.append('Huawei')
-
-
-data=np.array(Data_Sorted_Array_CSSR_2G)
-
-x = np.arange(data.shape[0])
-dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
-d = 1./(data.shape[1]+2.)
-
-def cm_to_inch(value):
-    return value/2.54
-plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
-axes= plt.axes()
-
-
-for i in range(data.shape[1]):
-    plt.bar(x+dx[i],data[:,i], color = "orange",  width=d, label="label {}".format(i))
-
-
-for i , v in enumerate(Last_CSSR_2G):
-    plt.text( i + dx[31],Last_CSSR_2G[Index_of_Sort_CSSR_2G[i]] , str(Last_CSSR_2G[Index_of_Sort_CSSR_2G[i]]), color='black', size=12, fontweight='bold')
-
-axes.set_xticks(x, x_Labels_CSSR_2G)
-font1 = {'family':'serif','color':'black','size':17}
-plt.title("CSSR_2G(%)", fontdict = font1)
-plt.ylim(97, 100)
-grid(True)
-plt.savefig('CSSR_2G.png')
-
-image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CSSR_2G.png")
-y=80
-x=10
-h=1000
-w=520
-CSSR_2G_Bar_Cropped = image[x:w, y:h]
-cv2.imwrite("CSSR_2G.png", CSSR_2G_Bar_Cropped)
-
-
-
-
-
-Last_CSSR_3G=[CSSR_3G_NAK_Alborz[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_NAK_Tehran[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_NAK_North[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_NAK_Nokia[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_NAK_Huawei[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_Farafan[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_BR_TEL[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_Huawei[len(CSSR_3G_NAK_Alborz)-1] ]
-Index_of_Sort_CSSR_3G=np.argsort(Last_CSSR_3G)
-Data_Sorted_Array_CSSR_3G=[]
-x_Labels_CSSR_3G=[];
-for k in range(len(Index_of_Sort_CSSR_3G)):
-    if Index_of_Sort_CSSR_3G[k]==0:
-        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_NAK_Alborz)
-        x_Labels_CSSR_3G.append('NAK-Alborz')
-    if Index_of_Sort_CSSR_3G[k]==1:
-        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_NAK_Tehran)
-        x_Labels_CSSR_3G.append('NAK-Tehran')
-    if Index_of_Sort_CSSR_3G[k]==2:
-        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_NAK_North)
-        x_Labels_CSSR_3G.append('NAK-North')
-    if Index_of_Sort_CSSR_3G[k]==3:
-        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_NAK_Nokia)
-        x_Labels_CSSR_3G.append('NAK-Nokia')
-    if Index_of_Sort_CSSR_3G[k]==4:
-        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_NAK_Huawei)
-        x_Labels_CSSR_3G.append('NAK-Huawei')
-    if Index_of_Sort_CSSR_3G[k]==5:
-        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_Farafan)
-        x_Labels_CSSR_3G.append('Farafan')
-    if Index_of_Sort_CSSR_3G[k]==6:
-        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_BR_TEL)
-        x_Labels_CSSR_3G.append('BR-TEL')
-    if Index_of_Sort_CSSR_3G[k]==7:
-        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_Huawei)
-        x_Labels_CSSR_3G.append('Huawei')
-
-
-data=np.array(Data_Sorted_Array_CSSR_3G)
-
-x = np.arange(data.shape[0])
-dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
-d = 1./(data.shape[1]+2.)
-
-def cm_to_inch(value):
-    return value/2.54
-plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
-axes= plt.axes()
-
-
-for i in range(data.shape[1]):
-    plt.bar(x+dx[i],data[:,i], color = "orange",  width=d, label="label {}".format(i))
-
-
-for i , v in enumerate(Last_CSSR_3G):
-    plt.text( i + dx[31],Last_CSSR_3G[Index_of_Sort_CSSR_3G[i]] , str(Last_CSSR_3G[Index_of_Sort_CSSR_3G[i]]), color='black', size=12, fontweight='bold')
-
-axes.set_xticks(x, x_Labels_CSSR_3G)
-font1 = {'family':'serif','color':'black','size':17}
-plt.title("CSSR_3G(%)", fontdict = font1)
-plt.ylim(99, 100)
-grid(True)
-plt.savefig('CSSR_3G.png')
-
-image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CSSR_3G.png")
-y=80
-x=10
-h=1000
-w=520
-CSSR_3G_Bar_Cropped = image[x:w, y:h]
-cv2.imwrite("CSSR_3G.png", CSSR_3G_Bar_Cropped)
-
-
-
-
-
-Last_CDR_2G=[CDR_2G_NAK_Alborz[len(CDR_2G_NAK_Alborz)-1], CDR_2G_NAK_Tehran[len(CDR_2G_NAK_Alborz)-1], CDR_2G_NAK_North[len(CDR_2G_NAK_Alborz)-1], CDR_2G_NAK_Nokia[len(CDR_2G_NAK_Alborz)-1], CDR_2G_NAK_Huawei[len(CDR_2G_NAK_Alborz)-1], CDR_2G_Farafan[len(CDR_2G_NAK_Alborz)-1], CDR_2G_BR_TEL[len(CDR_2G_NAK_Alborz)-1], CDR_2G_Huawei[len(CDR_2G_NAK_Alborz)-1] ]
-Index_of_Sort_CDR_2G=np.argsort(Last_CDR_2G)[::-1]
-Data_Sorted_Array_CDR_2G=[]
-x_Labels_CDR_2G=[];
-for k in range(len(Index_of_Sort_CDR_2G)):
-    if Index_of_Sort_CDR_2G[k]==0:
-        Data_Sorted_Array_CDR_2G.append(CDR_2G_NAK_Alborz)
-        x_Labels_CDR_2G.append('NAK-Alborz')
-    if Index_of_Sort_CDR_2G[k]==1:
-        Data_Sorted_Array_CDR_2G.append(CDR_2G_NAK_Tehran)
-        x_Labels_CDR_2G.append('NAK-Tehran')
-    if Index_of_Sort_CDR_2G[k]==2:
-        Data_Sorted_Array_CDR_2G.append(CDR_2G_NAK_North)
-        x_Labels_CDR_2G.append('NAK-North')
-    if Index_of_Sort_CDR_2G[k]==3:
-        Data_Sorted_Array_CDR_2G.append(CDR_2G_NAK_Nokia)
-        x_Labels_CDR_2G.append('NAK-Nokia')
-    if Index_of_Sort_CDR_2G[k]==4:
-        Data_Sorted_Array_CDR_2G.append(CDR_2G_NAK_Huawei)
-        x_Labels_CDR_2G.append('NAK-Huawei')
-    if Index_of_Sort_CDR_2G[k]==5:
-        Data_Sorted_Array_CDR_2G.append(CDR_2G_Farafan)
-        x_Labels_CDR_2G.append('Farafan')
-    if Index_of_Sort_CDR_2G[k]==6:
-        Data_Sorted_Array_CDR_2G.append(CDR_2G_BR_TEL)
-        x_Labels_CDR_2G.append('BR-TEL')
-    if Index_of_Sort_CDR_2G[k]==7:
-        Data_Sorted_Array_CDR_2G.append(CDR_2G_Huawei)
-        x_Labels_CDR_2G.append('Huawei')
-
-
-data=np.array(Data_Sorted_Array_CDR_2G)
-
-x = np.arange(data.shape[0])
-dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
-d = 1./(data.shape[1]+2.)
-
-def cm_to_inch(value):
-    return value/2.54
-plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
-axes= plt.axes()
-
-
-for i in range(data.shape[1]):
-    plt.bar(x+dx[i],data[:,i], color = "orange",  width=d, label="label {}".format(i))
-
-
-for i , v in enumerate(Last_CDR_2G):
-    plt.text( i + dx[31],Last_CDR_2G[Index_of_Sort_CDR_2G[i]] , str(Last_CDR_2G[Index_of_Sort_CDR_2G[i]]), color='black', size=12, fontweight='bold')
-
-axes.set_xticks(x, x_Labels_CDR_2G)
-font1 = {'family':'serif','color':'black','size':17}
-plt.title("CDR_2G(%)", fontdict = font1)
-grid(True)
-plt.savefig('CDR_2G.png')
-
-image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CDR_2G.png")
-y=80
-x=10
-h=1000
-w=520
-CDR_2G_Bar_Cropped = image[x:w, y:h]
-cv2.imwrite("CDR_2G.png", CDR_2G_Bar_Cropped)
-
-
-
-
-
-
-
-Last_CDR_3G=[CDR_3G_NAK_Alborz[len(CDR_3G_NAK_Alborz)-1], CDR_3G_NAK_Tehran[len(CDR_3G_NAK_Alborz)-1], CDR_3G_NAK_North[len(CDR_3G_NAK_Alborz)-1], CDR_3G_NAK_Nokia[len(CDR_3G_NAK_Alborz)-1], CDR_3G_NAK_Huawei[len(CDR_3G_NAK_Alborz)-1], CDR_3G_Farafan[len(CDR_3G_NAK_Alborz)-1], CDR_3G_BR_TEL[len(CDR_3G_NAK_Alborz)-1], CDR_3G_Huawei[len(CDR_3G_NAK_Alborz)-1] ]
-Index_of_Sort_CDR_3G=np.argsort(Last_CDR_3G)[::-1]
-Data_Sorted_Array_CDR_3G=[]
-x_Labels_CDR_3G=[];
-for k in range(len(Index_of_Sort_CDR_3G)):
-    if Index_of_Sort_CDR_3G[k]==0:
-        Data_Sorted_Array_CDR_3G.append(CDR_3G_NAK_Alborz)
-        x_Labels_CDR_3G.append('NAK-Alborz')
-    if Index_of_Sort_CDR_3G[k]==1:
-        Data_Sorted_Array_CDR_3G.append(CDR_3G_NAK_Tehran)
-        x_Labels_CDR_3G.append('NAK-Tehran')
-    if Index_of_Sort_CDR_3G[k]==2:
-        Data_Sorted_Array_CDR_3G.append(CDR_3G_NAK_North)
-        x_Labels_CDR_3G.append('NAK-North')
-    if Index_of_Sort_CDR_3G[k]==3:
-        Data_Sorted_Array_CDR_3G.append(CDR_3G_NAK_Nokia)
-        x_Labels_CDR_3G.append('NAK-Nokia')
-    if Index_of_Sort_CDR_3G[k]==4:
-        Data_Sorted_Array_CDR_3G.append(CDR_3G_NAK_Huawei)
-        x_Labels_CDR_3G.append('NAK-Huawei')
-    if Index_of_Sort_CDR_3G[k]==5:
-        Data_Sorted_Array_CDR_3G.append(CDR_3G_Farafan)
-        x_Labels_CDR_3G.append('Farafan')
-    if Index_of_Sort_CDR_3G[k]==6:
-        Data_Sorted_Array_CDR_3G.append(CDR_3G_BR_TEL)
-        x_Labels_CDR_3G.append('BR-TEL')
-    if Index_of_Sort_CDR_3G[k]==7:
-        Data_Sorted_Array_CDR_3G.append(CDR_3G_Huawei)
-        x_Labels_CDR_3G.append('Huawei')
-
-
-data=np.array(Data_Sorted_Array_CDR_3G)
-
-x = np.arange(data.shape[0])
-dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
-d = 1./(data.shape[1]+2.)
-
-def cm_to_inch(value):
-    return value/2.54
-plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
-axes= plt.axes()
-
-
-for i in range(data.shape[1]):
-    plt.bar(x+dx[i],data[:,i], color = "orange",  width=d, label="label {}".format(i))
-
-
-for i , v in enumerate(Last_CDR_3G):
-    plt.text( i + dx[31],Last_CDR_3G[Index_of_Sort_CDR_3G[i]] , str(Last_CDR_3G[Index_of_Sort_CDR_3G[i]]), color='black', size=12, fontweight='bold')
-
-axes.set_xticks(x, x_Labels_CDR_3G)
-font1 = {'family':'serif','color':'black','size':17}
-plt.title("CDR_3G(%)", fontdict = font1)
-grid(True)
-plt.savefig('CDR_3G.png')
-
-image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CDR_3G.png")
-y=80
-x=10
-h=1000
-w=520
-CDR_3G_Bar_Cropped = image[x:w, y:h]
-cv2.imwrite("CDR_3G.png", CDR_3G_Bar_Cropped)
- 
-
-# 
-
-
-
-
-
-
-
 
 
 
@@ -843,8 +431,7 @@ x = np.arange(data.shape[0])
 dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
 d = 1./(data.shape[1]+2.)
 
-def cm_to_inch(value):
-    return value/2.54
+
 plt.figure(figsize=(cm_to_inch(27),cm_to_inch(12)))
 axes= plt.axes()
 
@@ -1057,8 +644,7 @@ x = np.arange(data.shape[0])
 dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
 d = 1./(data.shape[1]+2.)
 
-def cm_to_inch(value):
-    return value/2.54
+
 plt.figure(figsize=(cm_to_inch(27),cm_to_inch(12)))
 axes= plt.axes()
 
@@ -1341,8 +927,7 @@ for t in range(16):
         dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
         d = 1./(data.shape[1]+2.)
 
-        def cm_to_inch(value):
-            return value/2.54
+
         plt.figure(figsize=(cm_to_inch(28),cm_to_inch(12)))
         axes= plt.axes()
 
@@ -1696,8 +1281,7 @@ x = np.arange(data.shape[0])
 dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
 d = 1./(data.shape[1]+2.)
 
-def cm_to_inch(value):
-    return value/2.54
+
 plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
 axes= plt.axes()
 
@@ -1763,8 +1347,7 @@ x = np.arange(data.shape[0])
 dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
 d = 1./(data.shape[1]+2.)
 
-def cm_to_inch(value):
-    return value/2.54
+
 plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
 axes= plt.axes()
 
@@ -1828,8 +1411,7 @@ x = np.arange(data.shape[0])
 dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
 d = 1./(data.shape[1]+2.)
 
-def cm_to_inch(value):
-    return value/2.54
+
 plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
 axes= plt.axes()
 
@@ -2074,8 +1656,7 @@ x = np.arange(data.shape[0])
 dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
 d = 1./(data.shape[1]+2.)
 
-def cm_to_inch(value):
-    return value/2.54
+
 plt.figure(figsize=(cm_to_inch(27),cm_to_inch(6)))
 axes= plt.axes()
 
@@ -2141,8 +1722,7 @@ x = np.arange(data.shape[0])
 dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
 d = 1./(data.shape[1]+2.)
 
-def cm_to_inch(value):
-    return value/2.54
+
 plt.figure(figsize=(cm_to_inch(27),cm_to_inch(6)))
 axes= plt.axes()
 
@@ -2208,8 +1788,7 @@ x = np.arange(data.shape[0])
 dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
 d = 1./(data.shape[1]+2.)
 
-def cm_to_inch(value):
-    return value/2.54
+
 plt.figure(figsize=(cm_to_inch(27),cm_to_inch(6)))
 axes= plt.axes()
 
@@ -2275,8 +1854,7 @@ x = np.arange(data.shape[0])
 dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
 d = 1./(data.shape[1]+2.)
 
-def cm_to_inch(value):
-    return value/2.54
+
 plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
 axes= plt.axes()
 
@@ -2873,7 +2451,7 @@ for t in range(8):
         ax1.set_xticks(X_Vec, x_Downsample,fontsize=5, rotation='vertical')
         leg = ax1.legend();
         font1 = {'family':'serif','color':'black','size':12}
-        plt.title(Contractor+" & Country", fontdict = font1)
+        plt.title('CC (%), '+Contractor+" & Country", fontdict = font1)
         plt.ylabel('CC (%)')
         grid(True)
         plt.savefig("CC_"+Contractor+"_Country.png")
@@ -2975,7 +2553,7 @@ for t in range(8):
         ax1.set_xticks(X_Vec, x_Downsample,fontsize=5, rotation='vertical')
         leg = ax1.legend();
         font1 = {'family':'serif','color':'black','size':12}
-        plt.title(Contractor+" & Country", fontdict = font1)
+        plt.title('RD (%), '+Contractor+" & Country", fontdict = font1)
         plt.ylabel('RD (%)')
         grid(True)
         plt.savefig("RD_"+Contractor+"_Country.png")
@@ -3014,6 +2592,8 @@ for t in range(8):
 # (((((((((((((((((((((((((((((((((((((   CS and PS    )))))))))))))))))))))))))))))))))))))
 # ******************************************************************************************
 
+
+
 conn_performanceDB.execute("select Wk,Contractor, avg([CSSR_2G]) as 'CSSR_2G', avg([CSSR_3G]) as 'CSSR_3G', avg([CDR_2G]) as 'CDR_2G', avg([CDR_3G]) as 'CDR_3G' from ("+
                            "select Wk, Contractor,PIndex, SUM([2G TCH Traffic]*[CSSR_MCI])/sum([2G TCH Traffic]) as 'CSSR_2G',"+
                               "SUM([3G_CS_Traffic]*[CS_CSSR])/sum([3G_CS_Traffic]) as 'CSSR_3G',"+
@@ -3034,7 +2614,7 @@ conn_performanceDB.execute("select Wk,Contractor, avg([PSSR_2G]) as 'PSSR_2G', a
 PS_Table=conn_performanceDB.fetchall()
 
 
-# Change Code from this point
+
 
 CSSR_2G_NAK_Alborz=[]
 CSSR_2G_NAK_Tehran=[]
@@ -3079,7 +2659,7 @@ CDR_3G_Huawei=[]
 Week_Vec=[]
 
 for i in range(len(CS_Table)):
-    Row_Data=str(CC_Table[i])
+    Row_Data=str(CS_Table[i])
     Row_Data=Row_Data.split(", ")
 
     Week=Row_Data[0]
@@ -3182,8 +2762,7 @@ x = np.arange(data.shape[0])
 dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
 d = 1./(data.shape[1]+2.)
 
-def cm_to_inch(value):
-    return value/2.54
+
 plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
 axes= plt.axes()
 
@@ -3198,7 +2777,7 @@ for i , v in enumerate(Last_CSSR_2G):
 axes.set_xticks(x, x_Labels_CSSR_2G)
 font1 = {'family':'serif','color':'black','size':17}
 plt.title("CSSR_2G(%)", fontdict = font1)
-plt.ylim(75, 100)
+plt.ylim(97, 100)
 grid(True)
 plt.savefig('CSSR_2G.png')
 
@@ -3212,45 +2791,114 @@ cv2.imwrite("CSSR_2G.png", CSSR_2G_Bar_Cropped)
 
 
 
-Last_CC3=[CC3_NAK_Alborz[len(CC3_NAK_Alborz)-1], CC3_NAK_Tehran[len(CC3_NAK_Alborz)-1], CC3_NAK_North[len(CC3_NAK_Alborz)-1], CC3_NAK_Nokia[len(CC3_NAK_Alborz)-1], CC3_NAK_Huawei[len(CC3_NAK_Alborz)-1], CC3_Farafan[len(CC3_NAK_Alborz)-1], CC3_BR_TEL[len(CC3_NAK_Alborz)-1], CC3_Huawei[len(CC3_NAK_Alborz)-1] ]
-Index_of_Sort_CC3=np.argsort(Last_CC3)
-Data_Sorted_Array_CC3=[]
-x_Labels_CC3=[];
-for k in range(len(Index_of_Sort_CC3)):
-    if Index_of_Sort_CC3[k]==0:
-        Data_Sorted_Array_CC3.append(CC3_NAK_Alborz)
-        x_Labels_CC3.append('NAK-Alborz')
-    if Index_of_Sort_CC3[k]==1:
-        Data_Sorted_Array_CC3.append(CC3_NAK_Tehran)
-        x_Labels_CC3.append('NAK-Tehran')
-    if Index_of_Sort_CC3[k]==2:
-        Data_Sorted_Array_CC3.append(CC3_NAK_North)
-        x_Labels_CC3.append('NAK-North')
-    if Index_of_Sort_CC3[k]==3:
-        Data_Sorted_Array_CC3.append(CC3_NAK_Nokia)
-        x_Labels_CC3.append('NAK-Nokia')
-    if Index_of_Sort_CC3[k]==4:
-        Data_Sorted_Array_CC3.append(CC3_NAK_Huawei)
-        x_Labels_CC3.append('NAK-Huawei')
-    if Index_of_Sort_CC3[k]==5:
-        Data_Sorted_Array_CC3.append(CC3_Farafan)
-        x_Labels_CC3.append('Farafan')
-    if Index_of_Sort_CC3[k]==6:
-        Data_Sorted_Array_CC3.append(CC3_BR_TEL)
-        x_Labels_CC3.append('BR-TEL')
-    if Index_of_Sort_CC3[k]==7:
-        Data_Sorted_Array_CC3.append(CC3_Huawei)
-        x_Labels_CC3.append('Huawei')
 
 
-data=np.array(Data_Sorted_Array_CC3)
+Last_CSSR_3G=[CSSR_3G_NAK_Alborz[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_NAK_Tehran[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_NAK_North[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_NAK_Nokia[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_NAK_Huawei[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_Farafan[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_BR_TEL[len(CSSR_3G_NAK_Alborz)-1], CSSR_3G_Huawei[len(CSSR_3G_NAK_Alborz)-1] ]
+Index_of_Sort_CSSR_3G=np.argsort(Last_CSSR_3G)
+Data_Sorted_Array_CSSR_3G=[]
+x_Labels_CSSR_3G=[];
+for k in range(len(Index_of_Sort_CSSR_3G)):
+    if Index_of_Sort_CSSR_3G[k]==0:
+        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_NAK_Alborz)
+        x_Labels_CSSR_3G.append('NAK-Alborz')
+    if Index_of_Sort_CSSR_3G[k]==1:
+        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_NAK_Tehran)
+        x_Labels_CSSR_3G.append('NAK-Tehran')
+    if Index_of_Sort_CSSR_3G[k]==2:
+        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_NAK_North)
+        x_Labels_CSSR_3G.append('NAK-North')
+    if Index_of_Sort_CSSR_3G[k]==3:
+        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_NAK_Nokia)
+        x_Labels_CSSR_3G.append('NAK-Nokia')
+    if Index_of_Sort_CSSR_3G[k]==4:
+        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_NAK_Huawei)
+        x_Labels_CSSR_3G.append('NAK-Huawei')
+    if Index_of_Sort_CSSR_3G[k]==5:
+        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_Farafan)
+        x_Labels_CSSR_3G.append('Farafan')
+    if Index_of_Sort_CSSR_3G[k]==6:
+        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_BR_TEL)
+        x_Labels_CSSR_3G.append('BR-TEL')
+    if Index_of_Sort_CSSR_3G[k]==7:
+        Data_Sorted_Array_CSSR_3G.append(CSSR_3G_Huawei)
+        x_Labels_CSSR_3G.append('Huawei')
+
+
+data=np.array(Data_Sorted_Array_CSSR_3G)
 
 x = np.arange(data.shape[0])
 dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
 d = 1./(data.shape[1]+2.)
 
-def cm_to_inch(value):
-    return value/2.54
+
+plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
+axes= plt.axes()
+
+
+for i in range(data.shape[1]):
+    plt.bar(x+dx[i],data[:,i], color = "royalblue",  width=d, label="label {}".format(i))
+
+
+for i , v in enumerate(Last_CSSR_3G):
+    plt.text( i + dx[31],Last_CSSR_3G[Index_of_Sort_CSSR_3G[i]] , str(Last_CSSR_3G[Index_of_Sort_CSSR_3G[i]]), color='black', size=12, fontweight='bold')
+
+axes.set_xticks(x, x_Labels_CSSR_3G)
+font1 = {'family':'serif','color':'black','size':17}
+plt.title("CSSR_3G(%)", fontdict = font1)
+plt.ylim(99, 100)
+grid(True)
+plt.savefig('CSSR_3G.png')
+
+image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CSSR_3G.png")
+y=80
+x=10
+h=1000
+w=520
+CSSR_3G_Bar_Cropped = image[x:w, y:h]
+cv2.imwrite("CSSR_3G.png", CSSR_3G_Bar_Cropped)
+
+
+
+
+
+Last_CDR_2G=[CDR_2G_NAK_Alborz[len(CDR_2G_NAK_Alborz)-1], CDR_2G_NAK_Tehran[len(CDR_2G_NAK_Alborz)-1], CDR_2G_NAK_North[len(CDR_2G_NAK_Alborz)-1], CDR_2G_NAK_Nokia[len(CDR_2G_NAK_Alborz)-1], CDR_2G_NAK_Huawei[len(CDR_2G_NAK_Alborz)-1], CDR_2G_Farafan[len(CDR_2G_NAK_Alborz)-1], CDR_2G_BR_TEL[len(CDR_2G_NAK_Alborz)-1], CDR_2G_Huawei[len(CDR_2G_NAK_Alborz)-1] ]
+Index_of_Sort_CDR_2G=np.argsort(Last_CDR_2G)[::-1]
+Data_Sorted_Array_CDR_2G=[]
+x_Labels_CDR_2G=[];
+for k in range(len(Index_of_Sort_CDR_2G)):
+    if Index_of_Sort_CDR_2G[k]==0:
+        Data_Sorted_Array_CDR_2G.append(CDR_2G_NAK_Alborz)
+        x_Labels_CDR_2G.append('NAK-Alborz')
+    if Index_of_Sort_CDR_2G[k]==1:
+        Data_Sorted_Array_CDR_2G.append(CDR_2G_NAK_Tehran)
+        x_Labels_CDR_2G.append('NAK-Tehran')
+    if Index_of_Sort_CDR_2G[k]==2:
+        Data_Sorted_Array_CDR_2G.append(CDR_2G_NAK_North)
+        x_Labels_CDR_2G.append('NAK-North')
+    if Index_of_Sort_CDR_2G[k]==3:
+        Data_Sorted_Array_CDR_2G.append(CDR_2G_NAK_Nokia)
+        x_Labels_CDR_2G.append('NAK-Nokia')
+    if Index_of_Sort_CDR_2G[k]==4:
+        Data_Sorted_Array_CDR_2G.append(CDR_2G_NAK_Huawei)
+        x_Labels_CDR_2G.append('NAK-Huawei')
+    if Index_of_Sort_CDR_2G[k]==5:
+        Data_Sorted_Array_CDR_2G.append(CDR_2G_Farafan)
+        x_Labels_CDR_2G.append('Farafan')
+    if Index_of_Sort_CDR_2G[k]==6:
+        Data_Sorted_Array_CDR_2G.append(CDR_2G_BR_TEL)
+        x_Labels_CDR_2G.append('BR-TEL')
+    if Index_of_Sort_CDR_2G[k]==7:
+        Data_Sorted_Array_CDR_2G.append(CDR_2G_Huawei)
+        x_Labels_CDR_2G.append('Huawei')
+
+
+data=np.array(Data_Sorted_Array_CDR_2G)
+
+x = np.arange(data.shape[0])
+dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
+d = 1./(data.shape[1]+2.)
+
+
 plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
 axes= plt.axes()
 
@@ -3259,64 +2907,284 @@ for i in range(data.shape[1]):
     plt.bar(x+dx[i],data[:,i], color = "orange",  width=d, label="label {}".format(i))
 
 
-for i , v in enumerate(Last_CC3):
-    plt.text( i + dx[31],Last_CC3[Index_of_Sort_CC3[i]] , str(Last_CC3[Index_of_Sort_CC3[i]]), color='black', size=12, fontweight='bold')
+for i , v in enumerate(Last_CDR_2G):
+    plt.text( i + dx[31],Last_CDR_2G[Index_of_Sort_CDR_2G[i]] , str(Last_CDR_2G[Index_of_Sort_CDR_2G[i]]), color='black', size=12, fontweight='bold')
 
-axes.set_xticks(x, x_Labels_CC3)
+axes.set_xticks(x, x_Labels_CDR_2G)
 font1 = {'family':'serif','color':'black','size':17}
-plt.title("CC3(%)", fontdict = font1)
-plt.ylim(75, 100)
+plt.title("CDR_2G(%)", fontdict = font1)
 grid(True)
-plt.savefig('CC3.png')
+plt.savefig('CDR_2G.png')
 
-image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CC3.png")
+image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CDR_2G.png")
 y=80
 x=10
 h=1000
 w=520
-CC3_Bar_Cropped = image[x:w, y:h]
-cv2.imwrite("CC3.png", CC3_Bar_Cropped)
-
-Last_CC=[CC_NAK_Alborz[len(CC_NAK_Alborz)-1], CC_NAK_Tehran[len(CC_NAK_Alborz)-1], CC_NAK_North[len(CC_NAK_Alborz)-1], CC_NAK_Nokia[len(CC_NAK_Alborz)-1], CC_NAK_Huawei[len(CC_NAK_Alborz)-1], CC_Farafan[len(CC_NAK_Alborz)-1], CC_BR_TEL[len(CC_NAK_Alborz)-1], CC_Huawei[len(CC_NAK_Alborz)-1] ]
-Index_of_Sort_CC=np.argsort(Last_CC)
-Data_Sorted_Array_CC=[]
-x_Labels_CC=[];
-for k in range(len(Index_of_Sort_CC)):
-    if Index_of_Sort_CC[k]==0:
-        Data_Sorted_Array_CC.append(CC_NAK_Alborz)
-        x_Labels_CC.append('NAK-Alborz')
-    if Index_of_Sort_CC[k]==1:
-        Data_Sorted_Array_CC.append(CC_NAK_Tehran)
-        x_Labels_CC.append('NAK-Tehran')
-    if Index_of_Sort_CC[k]==2:
-        Data_Sorted_Array_CC.append(CC_NAK_North)
-        x_Labels_CC.append('NAK-North')
-    if Index_of_Sort_CC[k]==3:
-        Data_Sorted_Array_CC.append(CC_NAK_Nokia)
-        x_Labels_CC.append('NAK-Nokia')
-    if Index_of_Sort_CC[k]==4:
-        Data_Sorted_Array_CC.append(CC_NAK_Huawei)
-        x_Labels_CC.append('NAK-Huawei')
-    if Index_of_Sort_CC[k]==5:
-        Data_Sorted_Array_CC.append(CC_Farafan)
-        x_Labels_CC.append('Farafan')
-    if Index_of_Sort_CC[k]==6:
-        Data_Sorted_Array_CC.append(CC_BR_TEL)
-        x_Labels_CC.append('BR-TEL')
-    if Index_of_Sort_CC[k]==7:
-        Data_Sorted_Array_CC.append(CC_Huawei)
-        x_Labels_CC.append('Huawei')
+CDR_2G_Bar_Cropped = image[x:w, y:h]
+cv2.imwrite("CDR_2G.png", CDR_2G_Bar_Cropped)
 
 
-data=np.array(Data_Sorted_Array_CC)
+
+
+
+
+
+Last_CDR_3G=[CDR_3G_NAK_Alborz[len(CDR_3G_NAK_Alborz)-1], CDR_3G_NAK_Tehran[len(CDR_3G_NAK_Alborz)-1], CDR_3G_NAK_North[len(CDR_3G_NAK_Alborz)-1], CDR_3G_NAK_Nokia[len(CDR_3G_NAK_Alborz)-1], CDR_3G_NAK_Huawei[len(CDR_3G_NAK_Alborz)-1], CDR_3G_Farafan[len(CDR_3G_NAK_Alborz)-1], CDR_3G_BR_TEL[len(CDR_3G_NAK_Alborz)-1], CDR_3G_Huawei[len(CDR_3G_NAK_Alborz)-1] ]
+Index_of_Sort_CDR_3G=np.argsort(Last_CDR_3G)[::-1]
+Data_Sorted_Array_CDR_3G=[]
+x_Labels_CDR_3G=[];
+for k in range(len(Index_of_Sort_CDR_3G)):
+    if Index_of_Sort_CDR_3G[k]==0:
+        Data_Sorted_Array_CDR_3G.append(CDR_3G_NAK_Alborz)
+        x_Labels_CDR_3G.append('NAK-Alborz')
+    if Index_of_Sort_CDR_3G[k]==1:
+        Data_Sorted_Array_CDR_3G.append(CDR_3G_NAK_Tehran)
+        x_Labels_CDR_3G.append('NAK-Tehran')
+    if Index_of_Sort_CDR_3G[k]==2:
+        Data_Sorted_Array_CDR_3G.append(CDR_3G_NAK_North)
+        x_Labels_CDR_3G.append('NAK-North')
+    if Index_of_Sort_CDR_3G[k]==3:
+        Data_Sorted_Array_CDR_3G.append(CDR_3G_NAK_Nokia)
+        x_Labels_CDR_3G.append('NAK-Nokia')
+    if Index_of_Sort_CDR_3G[k]==4:
+        Data_Sorted_Array_CDR_3G.append(CDR_3G_NAK_Huawei)
+        x_Labels_CDR_3G.append('NAK-Huawei')
+    if Index_of_Sort_CDR_3G[k]==5:
+        Data_Sorted_Array_CDR_3G.append(CDR_3G_Farafan)
+        x_Labels_CDR_3G.append('Farafan')
+    if Index_of_Sort_CDR_3G[k]==6:
+        Data_Sorted_Array_CDR_3G.append(CDR_3G_BR_TEL)
+        x_Labels_CDR_3G.append('BR-TEL')
+    if Index_of_Sort_CDR_3G[k]==7:
+        Data_Sorted_Array_CDR_3G.append(CDR_3G_Huawei)
+        x_Labels_CDR_3G.append('Huawei')
+
+
+data=np.array(Data_Sorted_Array_CDR_3G)
 
 x = np.arange(data.shape[0])
 dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
 d = 1./(data.shape[1]+2.)
 
-def cm_to_inch(value):
-    return value/2.54
+
 plt.figure(figsize=(cm_to_inch(27),cm_to_inch(9)))
+axes= plt.axes()
+
+
+for i in range(data.shape[1]):
+    plt.bar(x+dx[i],data[:,i], color = "royalblue",  width=d, label="label {}".format(i))
+
+
+for i , v in enumerate(Last_CDR_3G):
+    plt.text( i + dx[31],Last_CDR_3G[Index_of_Sort_CDR_3G[i]] , str(Last_CDR_3G[Index_of_Sort_CDR_3G[i]]), color='black', size=12, fontweight='bold')
+
+axes.set_xticks(x, x_Labels_CDR_3G)
+font1 = {'family':'serif','color':'black','size':17}
+plt.title("CDR_3G(%)", fontdict = font1)
+grid(True)
+plt.savefig('CDR_3G.png')
+
+image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CDR_3G.png")
+y=80
+x=10
+h=1000
+w=520
+CDR_3G_Bar_Cropped = image[x:w, y:h]
+cv2.imwrite("CDR_3G.png", CDR_3G_Bar_Cropped)
+ 
+
+
+
+
+PSSR_2G_NAK_Alborz=[]
+PSSR_2G_NAK_Tehran=[]
+PSSR_2G_NAK_North=[]
+PSSR_2G_NAK_Nokia=[]
+PSSR_2G_NAK_Huawei=[]
+PSSR_2G_Farafan=[]
+PSSR_2G_BR_TEL=[]
+PSSR_2G_Huawei=[]
+
+
+PSSR_3G_NAK_Alborz=[]
+PSSR_3G_NAK_Tehran=[]
+PSSR_3G_NAK_North=[]
+PSSR_3G_NAK_Nokia=[]
+PSSR_3G_NAK_Huawei=[]
+PSSR_3G_Farafan=[]
+PSSR_3G_BR_TEL=[]
+PSSR_3G_Huawei=[]
+
+
+PSSR_4G_NAK_Alborz=[]
+PSSR_4G_NAK_Tehran=[]
+PSSR_4G_NAK_North=[]
+PSSR_4G_NAK_Nokia=[]
+PSSR_4G_NAK_Huawei=[]
+PSSR_4G_Farafan=[]
+PSSR_4G_BR_TEL=[]
+PSSR_4G_Huawei=[]
+
+
+
+PDR_2G_NAK_Alborz=[]
+PDR_2G_NAK_Tehran=[]
+PDR_2G_NAK_North=[]
+PDR_2G_NAK_Nokia=[]
+PDR_2G_NAK_Huawei=[]
+PDR_2G_Farafan=[]
+PDR_2G_BR_TEL=[]
+PDR_2G_Huawei=[]
+
+
+PDR_3G_NAK_Alborz=[]
+PDR_3G_NAK_Tehran=[]
+PDR_3G_NAK_North=[]
+PDR_3G_NAK_Nokia=[]
+PDR_3G_NAK_Huawei=[]
+PDR_3G_Farafan=[]
+PDR_3G_BR_TEL=[]
+PDR_3G_Huawei=[]
+
+PDR_4G_NAK_Alborz=[]
+PDR_4G_NAK_Tehran=[]
+PDR_4G_NAK_North=[]
+PDR_4G_NAK_Nokia=[]
+PDR_4G_NAK_Huawei=[]
+PDR_4G_Farafan=[]
+PDR_4G_BR_TEL=[]
+PDR_4G_Huawei=[]
+
+
+
+
+
+for i in range(len(PS_Table)):
+    Row_Data=str(PS_Table[i])
+    Row_Data=Row_Data.split(", ")
+
+    Week=Row_Data[0]
+    Contractor=Row_Data[1]
+    PSSR_2G_Str=Row_Data[2]
+    PSSR_2G_Val=round(float(PSSR_2G_Str[0:len(PSSR_2G_Str)-1]),2)
+    PSSR_3G_Str=Row_Data[3]
+    PSSR_3G_Val=round(float(PSSR_3G_Str[0:len(PSSR_3G_Str)-1]),2)
+    PSSR_4G_Str=Row_Data[4]
+    PSSR_4G_Val=round(float(PSSR_4G_Str[0:len(PSSR_4G_Str)-1]),2)
+
+    PDR_2G_Str=Row_Data[5]
+    PDR_2G_Val=round(float(PDR_2G_Str[0:len(PDR_2G_Str)-1]),2)
+    PDR_3G_Str=Row_Data[6]
+    PDR_3G_Val=round(float(PDR_3G_Str[0:len(PDR_3G_Str)-1]),2)
+    PDR_4G_Str=Row_Data[7]
+    PDR_4G_Val=round(float(PDR_4G_Str[0:len(PDR_4G_Str)-1]),2)
+
+    Week=Week[2:9]
+    Contractor=Contractor[1:len(Contractor)-1]
+    
+
+    #if Week=='1401-33':
+    #    break
+
+    if (Contractor=='NAK-Alborz'):
+        Week_Vec.append('W'+Week[5:7])
+        PSSR_2G_NAK_Alborz.append(PSSR_2G_Val)
+        PSSR_3G_NAK_Alborz.append(PSSR_3G_Val)
+        PSSR_4G_NAK_Alborz.append(PSSR_4G_Val)
+        PDR_2G_NAK_Alborz.append(PDR_2G_Val)
+        PDR_3G_NAK_Alborz.append(PDR_3G_Val)
+        PDR_4G_NAK_Alborz.append(PDR_4G_Val)
+    if (Contractor=='NAK-Tehran'):
+        PSSR_2G_NAK_Tehran.append(PSSR_2G_Val)
+        PSSR_3G_NAK_Tehran.append(PSSR_3G_Val)
+        PSSR_4G_NAK_Tehran.append(PSSR_4G_Val)
+        PDR_2G_NAK_Tehran.append(PDR_2G_Val)
+        PDR_3G_NAK_Tehran.append(PDR_3G_Val)
+        PDR_4G_NAK_Tehran.append(PDR_4G_Val)
+    if (Contractor=='NAK-North'):
+        PSSR_2G_NAK_North.append(PSSR_2G_Val)
+        PSSR_3G_NAK_North.append(PSSR_3G_Val)
+        PSSR_4G_NAK_North.append(PSSR_4G_Val)
+        PDR_2G_NAK_North.append(PDR_2G_Val)
+        PDR_3G_NAK_North.append(PDR_3G_Val)
+        PDR_4G_NAK_North.append(PDR_4G_Val)
+    if (Contractor=='NAK-Nokia'):
+        PSSR_2G_NAK_Nokia.append(PSSR_2G_Val)
+        PSSR_3G_NAK_Nokia.append(PSSR_3G_Val)
+        PSSR_4G_NAK_Nokia.append(PSSR_4G_Val)
+        PDR_2G_NAK_Nokia.append(PDR_2G_Val)
+        PDR_3G_NAK_Nokia.append(PDR_3G_Val)
+        PDR_4G_NAK_Nokia.append(PDR_4G_Val)
+    if (Contractor=='NAK-Huawei'):
+        PSSR_2G_NAK_Huawei.append(PSSR_2G_Val)
+        PSSR_3G_NAK_Huawei.append(PSSR_3G_Val)
+        PSSR_4G_NAK_Huawei.append(PSSR_4G_Val)
+        PDR_2G_NAK_Huawei.append(PDR_2G_Val)
+        PDR_3G_NAK_Huawei.append(PDR_3G_Val)
+        PDR_4G_NAK_Huawei.append(PDR_4G_Val)
+    if (Contractor=='Farafan'):
+        PSSR_2G_Farafan.append(PSSR_2G_Val)
+        PSSR_3G_Farafan.append(PSSR_3G_Val)
+        PSSR_4G_Farafan.append(PSSR_4G_Val)
+        PDR_2G_Farafan.append(PDR_2G_Val)
+        PDR_3G_Farafan.append(PDR_3G_Val)
+        PDR_4G_Farafan.append(PDR_4G_Val)
+    if (Contractor=='BR-TEL'):
+        PSSR_2G_BR_TEL.append(PSSR_2G_Val)
+        PSSR_3G_BR_TEL.append(PSSR_3G_Val)
+        PSSR_4G_BR_TEL.append(PSSR_4G_Val)
+        PDR_2G_BR_TEL.append(PDR_2G_Val)
+        PDR_3G_BR_TEL.append(PDR_3G_Val)
+        PDR_4G_BR_TEL.append(PDR_4G_Val)
+    if (Contractor=='Huawei'):
+        PSSR_2G_Huawei.append(PSSR_2G_Val)
+        PSSR_3G_Huawei.append(PSSR_3G_Val)
+        PSSR_4G_Huawei.append(PSSR_4G_Val)
+        PDR_2G_Huawei.append(PDR_2G_Val)
+        PDR_3G_Huawei.append(PDR_3G_Val)
+        PDR_4G_Huawei.append(PDR_4G_Val)
+
+
+Last_PSSR_2G=[PSSR_2G_NAK_Alborz[len(PSSR_2G_NAK_Alborz)-1], PSSR_2G_NAK_Tehran[len(PSSR_2G_NAK_Alborz)-1], PSSR_2G_NAK_North[len(PSSR_2G_NAK_Alborz)-1], PSSR_2G_NAK_Nokia[len(PSSR_2G_NAK_Alborz)-1], PSSR_2G_NAK_Huawei[len(PSSR_2G_NAK_Alborz)-1], PSSR_2G_Farafan[len(PSSR_2G_NAK_Alborz)-1], PSSR_2G_BR_TEL[len(PSSR_2G_NAK_Alborz)-1], PSSR_2G_Huawei[len(PSSR_2G_NAK_Alborz)-1] ]
+Index_of_Sort_PSSR_2G=np.argsort(Last_PSSR_2G)
+Data_Sorted_Array_PSSR_2G=[]
+x_Labels_PSSR_2G=[];
+for k in range(len(Index_of_Sort_PSSR_2G)):
+    if Index_of_Sort_PSSR_2G[k]==0:
+        Data_Sorted_Array_PSSR_2G.append(PSSR_2G_NAK_Alborz)
+        x_Labels_PSSR_2G.append('NAK-Alborz')
+    if Index_of_Sort_PSSR_2G[k]==1:
+        Data_Sorted_Array_PSSR_2G.append(PSSR_2G_NAK_Tehran)
+        x_Labels_PSSR_2G.append('NAK-Tehran')
+    if Index_of_Sort_PSSR_2G[k]==2:
+        Data_Sorted_Array_PSSR_2G.append(PSSR_2G_NAK_North)
+        x_Labels_PSSR_2G.append('NAK-North')
+    if Index_of_Sort_PSSR_2G[k]==3:
+        Data_Sorted_Array_PSSR_2G.append(PSSR_2G_NAK_Nokia)
+        x_Labels_PSSR_2G.append('NAK-Nokia')
+    if Index_of_Sort_PSSR_2G[k]==4:
+        Data_Sorted_Array_PSSR_2G.append(PSSR_2G_NAK_Huawei)
+        x_Labels_PSSR_2G.append('NAK-Huawei')
+    if Index_of_Sort_PSSR_2G[k]==5:
+        Data_Sorted_Array_PSSR_2G.append(PSSR_2G_Farafan)
+        x_Labels_PSSR_2G.append('Farafan')
+    if Index_of_Sort_PSSR_2G[k]==6:
+        Data_Sorted_Array_PSSR_2G.append(PSSR_2G_BR_TEL)
+        x_Labels_PSSR_2G.append('BR-TEL')
+    if Index_of_Sort_PSSR_2G[k]==7:
+        Data_Sorted_Array_PSSR_2G.append(PSSR_2G_Huawei)
+        x_Labels_PSSR_2G.append('Huawei')
+
+
+data=np.array(Data_Sorted_Array_PSSR_2G)
+
+x = np.arange(data.shape[0])
+dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
+d = 1./(data.shape[1]+2.)
+
+
+plt.figure(figsize=(cm_to_inch(27),cm_to_inch(6)))
 axes= plt.axes()
 
 
@@ -3324,21 +3192,412 @@ for i in range(data.shape[1]):
     plt.bar(x+dx[i],data[:,i], color = "orange",  width=d, label="label {}".format(i))
 
 
-for i , v in enumerate(Last_CC):
-    plt.text( i + dx[31],Last_CC[Index_of_Sort_CC[i]] , str(Last_CC[Index_of_Sort_CC[i]]), color='black', size=12, fontweight='bold')
+for i , v in enumerate(Last_PSSR_2G):
+    plt.text( i + dx[31],Last_PSSR_2G[Index_of_Sort_PSSR_2G[i]] , str(Last_PSSR_2G[Index_of_Sort_PSSR_2G[i]]), color='black', size=12, fontweight='bold')
 
-axes.set_xticks(x, x_Labels_CC)
-font1 = {'family':'serif','color':'black','size':17}
-plt.title("CC(%)", fontdict = font1)
-plt.ylim(75, 100)
+axes.set_xticks(x, x_Labels_PSSR_2G)
+font1 = {'family':'serif','color':'black','size':14}
+plt.title("PSSR_2G(%)", fontdict = font1)
+plt.ylim(95, 100)
 grid(True)
-plt.savefig('CC.png')
+plt.savefig('PSSR_2G.png')
 
-image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CC.png")
+image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\PSSR_2G.png")
 y=80
-x=10
+x=5
 h=1000
 w=520
-CC_Bar_Cropped = image[x:w, y:h]
-cv2.imwrite("CC.png", CC_Bar_Cropped)
+PSSR_2G_Bar_Cropped = image[x:w, y:h]
+cv2.imwrite("PSSR_2G.png", PSSR_2G_Bar_Cropped)
+
+
+
+
+
+Last_PSSR_3G=[PSSR_3G_NAK_Alborz[len(PSSR_3G_NAK_Alborz)-1], PSSR_3G_NAK_Tehran[len(PSSR_3G_NAK_Alborz)-1], PSSR_3G_NAK_North[len(PSSR_3G_NAK_Alborz)-1], PSSR_3G_NAK_Nokia[len(PSSR_3G_NAK_Alborz)-1], PSSR_3G_NAK_Huawei[len(PSSR_3G_NAK_Alborz)-1], PSSR_3G_Farafan[len(PSSR_3G_NAK_Alborz)-1], PSSR_3G_BR_TEL[len(PSSR_3G_NAK_Alborz)-1], PSSR_3G_Huawei[len(PSSR_3G_NAK_Alborz)-1] ]
+Index_of_Sort_PSSR_3G=np.argsort(Last_PSSR_3G)
+Data_Sorted_Array_PSSR_3G=[]
+x_Labels_PSSR_3G=[];
+for k in range(len(Index_of_Sort_PSSR_3G)):
+    if Index_of_Sort_PSSR_3G[k]==0:
+        Data_Sorted_Array_PSSR_3G.append(PSSR_3G_NAK_Alborz)
+        x_Labels_PSSR_3G.append('NAK-Alborz')
+    if Index_of_Sort_PSSR_3G[k]==1:
+        Data_Sorted_Array_PSSR_3G.append(PSSR_3G_NAK_Tehran)
+        x_Labels_PSSR_3G.append('NAK-Tehran')
+    if Index_of_Sort_PSSR_3G[k]==2:
+        Data_Sorted_Array_PSSR_3G.append(PSSR_3G_NAK_North)
+        x_Labels_PSSR_3G.append('NAK-North')
+    if Index_of_Sort_PSSR_3G[k]==3:
+        Data_Sorted_Array_PSSR_3G.append(PSSR_3G_NAK_Nokia)
+        x_Labels_PSSR_3G.append('NAK-Nokia')
+    if Index_of_Sort_PSSR_3G[k]==4:
+        Data_Sorted_Array_PSSR_3G.append(PSSR_3G_NAK_Huawei)
+        x_Labels_PSSR_3G.append('NAK-Huawei')
+    if Index_of_Sort_PSSR_3G[k]==5:
+        Data_Sorted_Array_PSSR_3G.append(PSSR_3G_Farafan)
+        x_Labels_PSSR_3G.append('Farafan')
+    if Index_of_Sort_PSSR_3G[k]==6:
+        Data_Sorted_Array_PSSR_3G.append(PSSR_3G_BR_TEL)
+        x_Labels_PSSR_3G.append('BR-TEL')
+    if Index_of_Sort_PSSR_3G[k]==7:
+        Data_Sorted_Array_PSSR_3G.append(PSSR_3G_Huawei)
+        x_Labels_PSSR_3G.append('Huawei')
+
+
+data=np.array(Data_Sorted_Array_PSSR_3G)
+
+x = np.arange(data.shape[0])
+dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
+d = 1./(data.shape[1]+2.)
+
+
+plt.figure(figsize=(cm_to_inch(27),cm_to_inch(6)))
+axes= plt.axes()
+
+
+for i in range(data.shape[1]):
+    plt.bar(x+dx[i],data[:,i], color = "royalblue",  width=d, label="label {}".format(i))
+
+
+for i , v in enumerate(Last_PSSR_3G):
+    plt.text( i + dx[31],Last_PSSR_3G[Index_of_Sort_PSSR_3G[i]] , str(Last_PSSR_3G[Index_of_Sort_PSSR_3G[i]]), color='black', size=12, fontweight='bold')
+
+axes.set_xticks(x, x_Labels_PSSR_3G)
+font1 = {'family':'serif','color':'black','size':14}
+plt.title("PSSR_3G(%)", fontdict = font1)
+plt.ylim(97, 100)
+grid(True)
+plt.savefig('PSSR_3G.png')
+
+image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\PSSR_3G.png")
+y=80
+x=5
+h=1000
+w=520
+PSSR_3G_Bar_Cropped = image[x:w, y:h]
+cv2.imwrite("PSSR_3G.png", PSSR_3G_Bar_Cropped)
+
+
+
+
+
+Last_PSSR_4G=[PSSR_4G_NAK_Alborz[len(PSSR_4G_NAK_Alborz)-1], PSSR_4G_NAK_Tehran[len(PSSR_4G_NAK_Alborz)-1], PSSR_4G_NAK_North[len(PSSR_4G_NAK_Alborz)-1], PSSR_4G_NAK_Nokia[len(PSSR_4G_NAK_Alborz)-1], PSSR_4G_NAK_Huawei[len(PSSR_4G_NAK_Alborz)-1], PSSR_4G_Farafan[len(PSSR_4G_NAK_Alborz)-1], PSSR_4G_BR_TEL[len(PSSR_4G_NAK_Alborz)-1], PSSR_4G_Huawei[len(PSSR_4G_NAK_Alborz)-1] ]
+Index_of_Sort_PSSR_4G=np.argsort(Last_PSSR_4G)
+Data_Sorted_Array_PSSR_4G=[]
+x_Labels_PSSR_4G=[];
+for k in range(len(Index_of_Sort_PSSR_4G)):
+    if Index_of_Sort_PSSR_4G[k]==0:
+        Data_Sorted_Array_PSSR_4G.append(PSSR_4G_NAK_Alborz)
+        x_Labels_PSSR_4G.append('NAK-Alborz')
+    if Index_of_Sort_PSSR_4G[k]==1:
+        Data_Sorted_Array_PSSR_4G.append(PSSR_4G_NAK_Tehran)
+        x_Labels_PSSR_4G.append('NAK-Tehran')
+    if Index_of_Sort_PSSR_4G[k]==2:
+        Data_Sorted_Array_PSSR_4G.append(PSSR_4G_NAK_North)
+        x_Labels_PSSR_4G.append('NAK-North')
+    if Index_of_Sort_PSSR_4G[k]==3:
+        Data_Sorted_Array_PSSR_4G.append(PSSR_4G_NAK_Nokia)
+        x_Labels_PSSR_4G.append('NAK-Nokia')
+    if Index_of_Sort_PSSR_4G[k]==4:
+        Data_Sorted_Array_PSSR_4G.append(PSSR_4G_NAK_Huawei)
+        x_Labels_PSSR_4G.append('NAK-Huawei')
+    if Index_of_Sort_PSSR_4G[k]==5:
+        Data_Sorted_Array_PSSR_4G.append(PSSR_4G_Farafan)
+        x_Labels_PSSR_4G.append('Farafan')
+    if Index_of_Sort_PSSR_4G[k]==6:
+        Data_Sorted_Array_PSSR_4G.append(PSSR_4G_BR_TEL)
+        x_Labels_PSSR_4G.append('BR-TEL')
+    if Index_of_Sort_PSSR_4G[k]==7:
+        Data_Sorted_Array_PSSR_4G.append(PSSR_4G_Huawei)
+        x_Labels_PSSR_4G.append('Huawei')
+
+
+data=np.array(Data_Sorted_Array_PSSR_4G)
+
+x = np.arange(data.shape[0])
+dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
+d = 1./(data.shape[1]+2.)
+
+
+plt.figure(figsize=(cm_to_inch(27),cm_to_inch(6)))
+axes= plt.axes()
+
+
+for i in range(data.shape[1]):
+    plt.bar(x+dx[i],data[:,i], color = "green",  width=d, label="label {}".format(i))
+
+
+for i , v in enumerate(Last_PSSR_4G):
+    plt.text( i + dx[31],Last_PSSR_4G[Index_of_Sort_PSSR_4G[i]] , str(Last_PSSR_4G[Index_of_Sort_PSSR_4G[i]]), color='black', size=12, fontweight='bold')
+
+axes.set_xticks(x, x_Labels_PSSR_4G)
+font1 = {'family':'serif','color':'black','size':14}
+plt.title("PSSR_4G(%)", fontdict = font1)
+plt.ylim(99, 100)
+grid(True)
+plt.savefig('PSSR_4G.png')
+
+image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\PSSR_4G.png")
+y=80
+x=5
+h=1000
+w=520
+PSSR_4G_Bar_Cropped = image[x:w, y:h]
+cv2.imwrite("PSSR_4G.png", PSSR_4G_Bar_Cropped)
+
+
+
+
+
+
+Last_PDR_2G=[PDR_2G_NAK_Alborz[len(PDR_2G_NAK_Alborz)-1], PDR_2G_NAK_Tehran[len(PDR_2G_NAK_Alborz)-1], PDR_2G_NAK_North[len(PDR_2G_NAK_Alborz)-1], PDR_2G_NAK_Nokia[len(PDR_2G_NAK_Alborz)-1], PDR_2G_NAK_Huawei[len(PDR_2G_NAK_Alborz)-1], PDR_2G_Farafan[len(PDR_2G_NAK_Alborz)-1], PDR_2G_BR_TEL[len(PDR_2G_NAK_Alborz)-1], PDR_2G_Huawei[len(PDR_2G_NAK_Alborz)-1] ]
+Index_of_Sort_PDR_2G=np.argsort(Last_PDR_2G)[::-1]
+Data_Sorted_Array_PDR_2G=[]
+x_Labels_PDR_2G=[];
+for k in range(len(Index_of_Sort_PDR_2G)):
+    if Index_of_Sort_PDR_2G[k]==0:
+        Data_Sorted_Array_PDR_2G.append(PDR_2G_NAK_Alborz)
+        x_Labels_PDR_2G.append('NAK-Alborz')
+    if Index_of_Sort_PDR_2G[k]==1:
+        Data_Sorted_Array_PDR_2G.append(PDR_2G_NAK_Tehran)
+        x_Labels_PDR_2G.append('NAK-Tehran')
+    if Index_of_Sort_PDR_2G[k]==2:
+        Data_Sorted_Array_PDR_2G.append(PDR_2G_NAK_North)
+        x_Labels_PDR_2G.append('NAK-North')
+    if Index_of_Sort_PDR_2G[k]==3:
+        Data_Sorted_Array_PDR_2G.append(PDR_2G_NAK_Nokia)
+        x_Labels_PDR_2G.append('NAK-Nokia')
+    if Index_of_Sort_PDR_2G[k]==4:
+        Data_Sorted_Array_PDR_2G.append(PDR_2G_NAK_Huawei)
+        x_Labels_PDR_2G.append('NAK-Huawei')
+    if Index_of_Sort_PDR_2G[k]==5:
+        Data_Sorted_Array_PDR_2G.append(PDR_2G_Farafan)
+        x_Labels_PDR_2G.append('Farafan')
+    if Index_of_Sort_PDR_2G[k]==6:
+        Data_Sorted_Array_PDR_2G.append(PDR_2G_BR_TEL)
+        x_Labels_PDR_2G.append('BR-TEL')
+    if Index_of_Sort_PDR_2G[k]==7:
+        Data_Sorted_Array_PDR_2G.append(PDR_2G_Huawei)
+        x_Labels_PDR_2G.append('Huawei')
+
+
+data=np.array(Data_Sorted_Array_PDR_2G)
+
+x = np.arange(data.shape[0])
+dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
+d = 1./(data.shape[1]+2.)
+
+
+plt.figure(figsize=(cm_to_inch(27),cm_to_inch(6)))
+axes= plt.axes()
+
+
+for i in range(data.shape[1]):
+    plt.bar(x+dx[i],data[:,i], color = "orange",  width=d, label="label {}".format(i))
+
+
+for i , v in enumerate(Last_PDR_2G):
+    plt.text( i + dx[31],Last_PDR_2G[Index_of_Sort_PDR_2G[i]] , str(Last_PDR_2G[Index_of_Sort_PDR_2G[i]]), color='black', size=12, fontweight='bold')
+
+axes.set_xticks(x, x_Labels_PDR_2G)
+font1 = {'family':'serif','color':'black','size':14}
+plt.title("PDR_2G(%)", fontdict = font1)
+grid(True)
+plt.savefig('PDR_2G.png')
+
+image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\PDR_2G.png")
+y=80
+x=5
+h=1000
+w=520
+PDR_2G_Bar_Cropped = image[x:w, y:h]
+cv2.imwrite("PDR_2G.png", PDR_2G_Bar_Cropped)
+
+
+
+
+
+Last_PDR_3G=[PDR_3G_NAK_Alborz[len(PDR_3G_NAK_Alborz)-1], PDR_3G_NAK_Tehran[len(PDR_3G_NAK_Alborz)-1], PDR_3G_NAK_North[len(PDR_3G_NAK_Alborz)-1], PDR_3G_NAK_Nokia[len(PDR_3G_NAK_Alborz)-1], PDR_3G_NAK_Huawei[len(PDR_3G_NAK_Alborz)-1], PDR_3G_Farafan[len(PDR_3G_NAK_Alborz)-1], PDR_3G_BR_TEL[len(PDR_3G_NAK_Alborz)-1], PDR_3G_Huawei[len(PDR_3G_NAK_Alborz)-1] ]
+Index_of_Sort_PDR_3G=np.argsort(Last_PDR_3G)[::-1]
+Data_Sorted_Array_PDR_3G=[]
+x_Labels_PDR_3G=[];
+for k in range(len(Index_of_Sort_PDR_3G)):
+    if Index_of_Sort_PDR_3G[k]==0:
+        Data_Sorted_Array_PDR_3G.append(PDR_3G_NAK_Alborz)
+        x_Labels_PDR_3G.append('NAK-Alborz')
+    if Index_of_Sort_PDR_3G[k]==1:
+        Data_Sorted_Array_PDR_3G.append(PDR_3G_NAK_Tehran)
+        x_Labels_PDR_3G.append('NAK-Tehran')
+    if Index_of_Sort_PDR_3G[k]==2:
+        Data_Sorted_Array_PDR_3G.append(PDR_3G_NAK_North)
+        x_Labels_PDR_3G.append('NAK-North')
+    if Index_of_Sort_PDR_3G[k]==3:
+        Data_Sorted_Array_PDR_3G.append(PDR_3G_NAK_Nokia)
+        x_Labels_PDR_3G.append('NAK-Nokia')
+    if Index_of_Sort_PDR_3G[k]==4:
+        Data_Sorted_Array_PDR_3G.append(PDR_3G_NAK_Huawei)
+        x_Labels_PDR_3G.append('NAK-Huawei')
+    if Index_of_Sort_PDR_3G[k]==5:
+        Data_Sorted_Array_PDR_3G.append(PDR_3G_Farafan)
+        x_Labels_PDR_3G.append('Farafan')
+    if Index_of_Sort_PDR_3G[k]==6:
+        Data_Sorted_Array_PDR_3G.append(PDR_3G_BR_TEL)
+        x_Labels_PDR_3G.append('BR-TEL')
+    if Index_of_Sort_PDR_3G[k]==7:
+        Data_Sorted_Array_PDR_3G.append(PDR_3G_Huawei)
+        x_Labels_PDR_3G.append('Huawei')
+
+
+data=np.array(Data_Sorted_Array_PDR_3G)
+
+x = np.arange(data.shape[0])
+dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
+d = 1./(data.shape[1]+2.)
+
+
+plt.figure(figsize=(cm_to_inch(27),cm_to_inch(6)))
+axes= plt.axes()
+
+
+for i in range(data.shape[1]):
+    plt.bar(x+dx[i],data[:,i], color = "royalblue",  width=d, label="label {}".format(i))
+
+
+for i , v in enumerate(Last_PDR_3G):
+    plt.text( i + dx[31],Last_PDR_3G[Index_of_Sort_PDR_3G[i]] , str(Last_PDR_3G[Index_of_Sort_PDR_3G[i]]), color='black', size=12, fontweight='bold')
+
+axes.set_xticks(x, x_Labels_PDR_3G)
+font1 = {'family':'serif','color':'black','size':14}
+plt.title("PDR_3G(%)", fontdict = font1)
+grid(True)
+plt.savefig('PDR_3G.png')
+
+image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\PDR_3G.png")
+y=80
+x=5
+h=1000
+w=520
+PDR_3G_Bar_Cropped = image[x:w, y:h]
+cv2.imwrite("PDR_3G.png", PDR_3G_Bar_Cropped)
+
+
+
+
+
+
+Last_PDR_4G=[PDR_4G_NAK_Alborz[len(PDR_4G_NAK_Alborz)-1], PDR_4G_NAK_Tehran[len(PDR_4G_NAK_Alborz)-1], PDR_4G_NAK_North[len(PDR_4G_NAK_Alborz)-1], PDR_4G_NAK_Nokia[len(PDR_4G_NAK_Alborz)-1], PDR_4G_NAK_Huawei[len(PDR_4G_NAK_Alborz)-1], PDR_4G_Farafan[len(PDR_4G_NAK_Alborz)-1], PDR_4G_BR_TEL[len(PDR_4G_NAK_Alborz)-1], PDR_4G_Huawei[len(PDR_4G_NAK_Alborz)-1] ]
+Index_of_Sort_PDR_4G=np.argsort(Last_PDR_4G)[::-1]
+Data_Sorted_Array_PDR_4G=[]
+x_Labels_PDR_4G=[];
+for k in range(len(Index_of_Sort_PDR_4G)):
+    if Index_of_Sort_PDR_4G[k]==0:
+        Data_Sorted_Array_PDR_4G.append(PDR_4G_NAK_Alborz)
+        x_Labels_PDR_4G.append('NAK-Alborz')
+    if Index_of_Sort_PDR_4G[k]==1:
+        Data_Sorted_Array_PDR_4G.append(PDR_4G_NAK_Tehran)
+        x_Labels_PDR_4G.append('NAK-Tehran')
+    if Index_of_Sort_PDR_4G[k]==2:
+        Data_Sorted_Array_PDR_4G.append(PDR_4G_NAK_North)
+        x_Labels_PDR_4G.append('NAK-North')
+    if Index_of_Sort_PDR_4G[k]==3:
+        Data_Sorted_Array_PDR_4G.append(PDR_4G_NAK_Nokia)
+        x_Labels_PDR_4G.append('NAK-Nokia')
+    if Index_of_Sort_PDR_4G[k]==4:
+        Data_Sorted_Array_PDR_4G.append(PDR_4G_NAK_Huawei)
+        x_Labels_PDR_4G.append('NAK-Huawei')
+    if Index_of_Sort_PDR_4G[k]==5:
+        Data_Sorted_Array_PDR_4G.append(PDR_4G_Farafan)
+        x_Labels_PDR_4G.append('Farafan')
+    if Index_of_Sort_PDR_4G[k]==6:
+        Data_Sorted_Array_PDR_4G.append(PDR_4G_BR_TEL)
+        x_Labels_PDR_4G.append('BR-TEL')
+    if Index_of_Sort_PDR_4G[k]==7:
+        Data_Sorted_Array_PDR_4G.append(PDR_4G_Huawei)
+        x_Labels_PDR_4G.append('Huawei')
+
+
+data=np.array(Data_Sorted_Array_PDR_4G)
+
+x = np.arange(data.shape[0])
+dx = (np.arange(data.shape[1])-data.shape[1]/2.)/(data.shape[1]+2.)
+d = 1./(data.shape[1]+2.)
+
+
+plt.figure(figsize=(cm_to_inch(27),cm_to_inch(6)))
+axes= plt.axes()
+
+
+for i in range(data.shape[1]):
+    plt.bar(x+dx[i],data[:,i], color = "green",  width=d, label="label {}".format(i))
+
+
+for i , v in enumerate(Last_PDR_4G):
+    plt.text( i + dx[31],Last_PDR_4G[Index_of_Sort_PDR_4G[i]] , str(Last_PDR_4G[Index_of_Sort_PDR_4G[i]]), color='black', size=12, fontweight='bold')
+
+axes.set_xticks(x, x_Labels_PDR_4G)
+font1 = {'family':'serif','color':'black','size':14}
+plt.title("PDR_4G(%)", fontdict = font1)
+grid(True)
+plt.savefig('PDR_4G.png')
+
+image = cv2.imread(r"D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\PDR_4G.png")
+y=80
+x=5
+h=1000
+w=520
+PDR_4G_Bar_Cropped = image[x:w, y:h]
+cv2.imwrite("PDR_4G.png", PDR_4G_Bar_Cropped)
+
+
+
+
+pic_left_1  = int(prs.slide_width *0.047)
+pic_top_1   = int(prs.slide_width *0.03)
+pic_width_1 = int(prs.slide_width *0.9)
+
+
+pic_left_3  = int(prs.slide_width *0.047)
+pic_top_3   = int(prs.slide_width *0.38)
+pic_width_3 = int(prs.slide_width *0.9)
+
+slide = prs.slides.add_slide(blank_slide_layout)
+
+pic = slide.shapes.add_picture("D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CSSR_2G.png", pic_left_1, pic_top_1, pic_width_1)
+pic = slide.shapes.add_picture("D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CSSR_3G.png", pic_left_3, pic_top_3, pic_width_3)
+
+slide = prs.slides.add_slide(blank_slide_layout)
+
+pic = slide.shapes.add_picture("D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CDR_2G.png", pic_left_1, pic_top_1, pic_width_1)
+pic = slide.shapes.add_picture("D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\CDR_3G.png", pic_left_3, pic_top_3, pic_width_3)
+
+
+pic_left_1  = int(prs.slide_width *0.047)
+pic_top_1   = int(prs.slide_width *0.03)
+pic_width_1 = int(prs.slide_width *0.9)
+
+pic_left_2  = int(prs.slide_width *0.047)
+pic_top_2   = int(prs.slide_width *0.27)
+pic_width_2 = int(prs.slide_width *0.9)
+
+pic_left_3  = int(prs.slide_width *0.047)
+pic_top_3   = int(prs.slide_width *0.51)
+pic_width_3 = int(prs.slide_width *0.9)
+
+
+
+slide = prs.slides.add_slide(blank_slide_layout)
+
+pic = slide.shapes.add_picture("D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\PSSR_2G.png", pic_left_1, pic_top_1, pic_width_1)
+pic = slide.shapes.add_picture("D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\PSSR_3G.png", pic_left_2, pic_top_2, pic_width_2)
+pic = slide.shapes.add_picture("D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\PSSR_4G.png", pic_left_3, pic_top_3, pic_width_3)
+
+slide = prs.slides.add_slide(blank_slide_layout)
+
+pic = slide.shapes.add_picture("D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\PDR_2G.png", pic_left_1, pic_top_1, pic_width_1)
+pic = slide.shapes.add_picture("D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\PDR_3G.png", pic_left_2, pic_top_2, pic_width_2)
+pic = slide.shapes.add_picture("D:\P1\Performane\Programmes\Python Projects\Weekly_Dashboards\Weekly_Dashboards\Weekly_Dashboards\PDR_4G.png", pic_left_3, pic_top_3, pic_width_3)
+
+
+prs.save('test.pptx')
 
